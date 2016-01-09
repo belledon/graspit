@@ -152,8 +152,8 @@ set (GRASPIT_HEADERS
 	${GSRC}/include/gws.h 
 	${GSRC}/include/gwsprojection.h 
 	${GSRC}/include/ivmgr.h 
-#	${GSRC}/include/ivmgr_nogui.h 
-#	${GSRC}/include/ivmgr_abstract.h 
+	${GSRC}/include/ivmgr_nogui.h 
+	${GSRC}/include/ivmgr_abstract.h 
 	${GSRC}/include/jacobian.h 
 	${GSRC}/include/joint.h 
 	${GSRC}/include/kinematicChain.h 
@@ -249,7 +249,7 @@ set (MOC_HEADERS
 
 
 set (GRASPIT_CORE_SOURCES
-#    ${GSRC}/src/debug.cpp 
+    ${GSRC}/src/debug.cpp 
     ${GSRC}/src/graspitParser.cpp 
     ${GSRC}/src/arch.cpp 
 	${GSRC}/src/barrett.cpp 
@@ -271,7 +271,7 @@ set (GRASPIT_CORE_SOURCES
 	${GSRC}/src/gwsprojection.cpp 
 	${GSRC}/src/humanHand.cpp 
 	${GSRC}/src/ivmgr.cpp 
-#	${GSRC}/src/ivmgr_nogui.cpp 
+	${GSRC}/src/ivmgr_nogui.cpp 
 	${GSRC}/src/jacobian.cpp 
 	${GSRC}/src/joint.cpp 
 	${GSRC}/src/kinematicChain.cpp 

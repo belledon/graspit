@@ -315,6 +315,23 @@ EGPlanner::getRunningTime()
   return 1.0e-6 * mProfileInstance->getTotalTimeMicroseconds();
 }
 
+void 
+EGPlanner::runPlannerLoop() 
+{ 
+	mMultiThread = false;
+	
+    PROF_RESET_ALL;
+	PROF_START_TIMER(EG_PLANNER);
+
+	mProfileInstance->startTimer();
+
+	mRenderType = RENDER_NEVER;
+	//signal that initialization is ready
+	setState(RUNNING);
+	threadLoop();
+}
+
+
 void
 EGPlanner::run()
 {

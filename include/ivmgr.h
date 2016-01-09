@@ -34,6 +34,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include "material.h"
+#include "ivmgr_abstract.h"
 
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
 
@@ -83,8 +84,8 @@ namespace db_planner {
 
 #define HANDS_DIR "../../hands/"
 #define OBJECTS_DIR "../../objects/"
-#define MAX_POLYTOPES 15
-#define MAX_COLLISIONS 5
+//#define MAX_POLYTOPES 15
+//#define MAX_COLLISIONS 5
 
 typedef double col_Mat4[4][4];
 
@@ -119,7 +120,7 @@ enum ToolType {TRANSLATE_TOOL,ROTATE_TOOL,SELECT_TOOL};
   This class also handles the display of contact forces and some other
   indicators, and can render and save an image of the current scene.
  */
-class IVmgr : public QWidget {
+class IVmgr : public QWidget, public IVmgrAbstract {
   Q_OBJECT
 
  private:
@@ -177,6 +178,11 @@ class IVmgr : public QWidget {
 
   //! The main and only interface for the CGDB; all interaction with the CGDB should go through this.
   db_planner::DatabaseManager *mDBMgr;
+
+  
+  virtual void viewAll(){
+    getViewer()->viewAll();
+  }
 
   void setupPointers();
   void transRot(DraggerInfo *dInfo);
@@ -270,9 +276,9 @@ public:
   int saveCameraPositions(const char *filename);
   int useSavedCameraPositions(const char *filename);
   //! Sets the camera position, orientaion and focal distance
-  void setCamera(double px, double py, double pz, double q1, double q2, double q3, double q4, double fd);
+  virtual void setCamera(double px, double py, double pz, double q1, double q2, double q3, double q4, double fd);
   //! Gets the camera position, orientaion and focal distance
-  void getCamera(float &px, float &py, float &pz, float &q1, float &q2, float &q3, float &q4, float &fd);
+  virtual void getCamera(float &px, float &py, float &pz, float &q1, float &q2, float &q3, float &q4, float &fd);
   void setCameraTransf(transf tr);
   transf getCameraTransf();
 

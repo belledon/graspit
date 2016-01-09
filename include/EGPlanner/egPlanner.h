@@ -176,6 +176,11 @@ public:
 	//! Stops the planner FOR GOOD.
 	virtual void stopPlanner();
 
+    // Replacement for the default thread run() method. Use this only if you are not using this planner's
+    // superclass (QThread) thread method (i.e., you are not using the start() or startThread() methods).
+    // Don't call startPlanner() then, only use this method!
+    void runPlannerLoop();
+
 	//! Tells the planner to create and use a clone of the hand passed to the constructor
 	void createAndUseClone();
 

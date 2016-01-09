@@ -190,7 +190,7 @@ ClientSocket::readClient()
     strPtr = lineStrList.begin();
 
 #ifdef GRASPITDBG
-    std::cout <<"Command parser line: "<<line << std::endl;
+    std::cout <<"Command parser line: "<<line.toStdString() << std::endl;
 #endif
     
     if (*strPtr == "getContacts") {

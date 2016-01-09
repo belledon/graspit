@@ -42,6 +42,9 @@
 
 #include <iostream>
 
+#include <QString>    
+extern std::ostream& operator<<(std::ostream& o, const QString& q);
+
 #ifdef GRASPITDBG
 #define DBGP(STMT) std::cerr<<STMT<<std::endl;
 #define DBGST(STMT) STMT;
@@ -55,5 +58,7 @@
 #define PRINT_STAT(STREAM_PTR,STMT) if (STREAM_PTR) *STREAM_PTR << STMT << " ";
 #define DBGAF(STREAM,STMT) {STREAM<<STMT<<std::endl; DBGA(STMT)}
 #define DBGPF(STREAM,STMT) {STREAM<<STMT<<std::endl; DBGP(STMT)}
+
+
 
 #endif

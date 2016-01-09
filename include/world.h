@@ -45,7 +45,7 @@ class mat3;
 class Quaternion;
 class transf;
 
-class IVmgr;
+class IVmgrAbstract;
 class Hand;
 class Robot;
 class HumanHand;
@@ -89,7 +89,7 @@ class World : public QObject {
 
 protected:
   //! Pointer to the IVmgr who controls the simulation
-  IVmgr *myIVmgr;
+  IVmgrAbstract *myIVmgr;
 
   //! Keeps track of the current simulation time.
   double worldTime;
@@ -224,7 +224,7 @@ Q_SIGNALS:
 
 public:	
   //! public constructor
-  World(QObject *parent=0,const char *name=0, IVmgr *mgr=NULL);
+  World(QObject *parent=0,const char *name=0, IVmgrAbstract *mgr=NULL);
 
   //! Saves the current user settings in the registry and clears the world
   ~World();

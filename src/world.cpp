@@ -49,7 +49,7 @@
 #include "humanHand.h"
 #include "contact.h"
 #include "contactSetting.h"
-#include "ivmgr.h"
+#include "ivmgr_abstract.h"
 #include "dynamics.h"
 #include "grasp.h"
 #include "dynJoint.h"
@@ -106,7 +106,7 @@ char graspitVersionStr[] = "GraspIt! version 2.1";
 that will handle all user interaction. Also initialized collision detection
 system and reads in global settings such as friction coefficients 
 */
-World::World(QObject *parent, const char *name, IVmgr *mgr) : QObject(parent,name)
+World::World(QObject *parent, const char *name, IVmgrAbstract *mgr) : QObject(parent,name)
 {
 	myIVmgr = mgr;
 
@@ -732,7 +732,7 @@ World::loadFromXml(const TiXmlElement* root,QString rootPath)
 	}
 
 	if (!cameraFound) {
-		myIVmgr->getViewer()->viewAll();
+		myIVmgr->viewAll();
 	}
 	findAllContacts();
 	modified = false;
@@ -1116,7 +1116,7 @@ World::selectElement(WorldElement *e)
 	int c,l;
 
 	DBGP("selecting element "<<e->getName().latin1());
-	if (e->inherits("Body")) {DBGP(" with collision id " << ((Body*)e)->getId());}
+	if (e->inherits("Body")) {DBGP(" with collision id " << ((Body*)e)->getName());}
 
 	if (e->inherits("Body")) numSelectedBodyElements++;
 	else if (e->inherits("Robot")) numSelectedRobotElements++;
@@ -1938,7 +1938,7 @@ World::moveDynamicBodies(double timeStep)
 
 #ifdef GRASPITDBG
 	std::cout << "CHECKING COLLISIONS AT MIDDLE OF STEP: ";
-	numCols = getCollisionReport(colReport);
+	numCols = getCollisionReport(&colReport);
 
 	if (!numCols){ 
 		std::cout << "None." << std::endl;
