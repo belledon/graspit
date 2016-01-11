@@ -411,9 +411,24 @@ World::destroyElement(WorldElement *e, bool deleteElement)
 
 	if (e->inherits("Body")) {
 		DBGP("found a body");
-		mCollisionInterface->removeBody( (Body*) e);
+		// Change by Jennifer 11.01.16:
+        // Remove body from collision interface ONLY if the body is
+        // actually still in the World. Otherwise we get an error
+        // from collision interace when the Body has been removed
+        // from the World earlier, but destroyElement() is still
+        // used as destructor method, e.g. from Robot destructor.
+        // Basically, only objects added in to the world should exist
+        // in the collision interface. If also objects which are
+        // NOT part of the world should be able to exist in the
+        // collision interface, we should probably revert this change.
+        // But because WorldElement* inherently is meant to be
+        // part of World (and also are QObject children of World),
+        // I assume now that the following change is safe.
+        // mCollisionInterface->removeBody( (Body*) e);
 		for (bp=bodyVec.begin();bp!=bodyVec.end();bp++) {
 			if (*bp == e) {
+                // put removeBody() here instead
+                mCollisionInterface->removeBody( (Body*) e);
 				bodyVec.erase(bp); numBodies--;
 				DBGP("removed body "<<((Body *)e)->getName()<<" from world");
 				break;
