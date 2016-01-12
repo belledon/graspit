@@ -82,7 +82,7 @@ Robot::~Robot()
 	if (mGloveInterface) delete mGloveInterface;
 	if (mEigenGrasps) delete mEigenGrasps;
 
-	std::cout << "Deleted robot: " << name() <<std::endl;
+	std::cout << "Deleted robot " << getName() <<std::endl;
 }
 
 /*! Loads the robot information from an XML node, which is asumed
