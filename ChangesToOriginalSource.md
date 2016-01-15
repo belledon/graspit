@@ -20,6 +20,11 @@ Details about the changes applied to the original source:
         - including *ivmgr_abstract.h* instead of *ivmgr.h*
         - calling *IVmgrAbstract::viewAll()* instead of *ivmgr->getViewer()->viewAll()*.
 
+
+        - Removing only registered bodies from collision interface: in the old version, if a body is removed, it is *always* removed from the collision interface as well, even if it is *not* registered in the world. This prints an error from collision interface if the body was not in the world. So I moved this line into the loop (see line 427 in the new world.cpp). 
+ I noticed this issue when I removed a robot and all its links from the scene and kept the pointer (deleteElement=false) to maintain it in the the database, so I could add it again later. destroyElement() is called from the Robot destructor. If the robot is destroyed but not part of the world, it will still remove its links from the collision interface... is this supposed to happen?
+
+
 - class Body:
     * body.cpp:
         - *axesTranToCOG / axesScale* is NULL if *graspItGUI* is NULL. Added check for NULL pointer in following functions:
