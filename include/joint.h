@@ -31,8 +31,11 @@
 #include <list>
 #include <vector>
 
-#include "include/mytools.h"
-#include "include/matvec3D.h"
+// this should not reference the include dir. Fixed in CMakeLists.
+// #include "include/mytools.h"
+#include "mytools.h"
+// #include "include/matvec3D.h"
+#include "matvec3D.h"
 
 class KinematicChain;
 class DynJoint;

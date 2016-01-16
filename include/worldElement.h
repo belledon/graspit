@@ -35,7 +35,9 @@
 #include <QObject>
 #include <QTextStream>
 
-#include "src/Collision/collisionStructures.h"
+// this should not reference the src dir. Fixed in CMakeLists.
+// #include "src/Collision/collisionStructures.h"
+#include "Collision/collisionStructures.h"
 
 class transf;
 class World;

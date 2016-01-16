@@ -32,7 +32,10 @@
 #define _collisionstructures_h_
 
 #include <vector>
-#include "include/matvec3D.h"
+
+// this should not reference the include dir. Fixed in CMakeLists.
+// #include "include/matvec3D.h"
+#include "matvec3D.h"
 
 class Body;
 class transf;

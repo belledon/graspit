@@ -29,8 +29,12 @@
 #include <QTextStream>
 #include <vector>
 
-#include "src/Collision/collisionStructures.h"
-#include "include/matvec3D.h"
+
+// this should not reference the src/include dirs. Fixed in CMakeLists.
+//#include "src/Collision/collisionStructures.h"
+#include "Collision/collisionStructures.h"
+//#include "include/matvec3D.h"
+#include "matvec3D.h"
 
 class SoSeparator;
 class SoTransform;

@@ -33,8 +33,11 @@
 #include <list>
 #include <vector>
 
-#include "include/worldElement.h"
-#include "include/contact.h"
+// this should not reference the include dir. Fixed in CMakeLists.
+// #include "include/worldElement.h"
+#include "worldElement.h"
+// #include "include/contact.h"
+#include "contact.h"
 
 #ifdef CGDB_ENABLED
 #include "DBase/graspit_db_model.h"

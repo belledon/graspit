@@ -132,7 +132,11 @@ set (GRASPIT_INCLUDEDIR_HEADERS
 	${GSRC}/include/graspitServer.h 
 	${GSRC}/include/graspitApp.h 
 	${GSRC}/include/dynJoint.h 
-	${GSRC}/include/arch.h 
+	${GSRC}/include/arch.h
+	${GSRC}/include/FitParabola.h 
+	${GSRC}/include/shadow.h
+)
+set (GRASPIT_PLANNER_HEADERS
 	${GSRC}/include/Planner/grasp_visualization.h 
 	${GSRC}/include/Planner/grasp_tester.h 
 	${GSRC}/include/Planner/grasp_preshape.h 
@@ -142,6 +146,8 @@ set (GRASPIT_INCLUDEDIR_HEADERS
 	${GSRC}/include/Planner/grasp_grasps.h 
 	${GSRC}/include/Planner/grasp_directions.h 
 	${GSRC}/include/Planner/grasp_coordinates.h 
+)
+set (GRASPIT_EGPLANNER_HEADERS
 	${GSRC}/include/EGPlanner/search.h 
 	${GSRC}/include/EGPlanner/simAnn.h 
 	${GSRC}/include/EGPlanner/searchState.h 
@@ -156,8 +162,6 @@ set (GRASPIT_INCLUDEDIR_HEADERS
 	${GSRC}/include/EGPlanner/graspTesterThread.h 
 	${GSRC}/include/EGPlanner/onLineGraspInterface.h 
 	${GSRC}/include/EGPlanner/listPlanner.h 
-	${GSRC}/include/FitParabola.h 
-	${GSRC}/include/shadow.h
 )
 
 
@@ -803,6 +807,16 @@ install(FILES
 install(FILES
     ${GRASPIT_CMDLINE_HEADERS}
     DESTINATION ${INCLUDE_DESTINATION}/cmdline
+)
+
+install(FILES
+    ${GRASPIT_PLANNER_HEADERS}
+    DESTINATION ${INCLUDE_DESTINATION}/Planner
+)
+
+install(FILES
+    ${GRASPIT_EGPLANNER_HEADERS}
+    DESTINATION ${INCLUDE_DESTINATION}/EGPlanner
 )
 
 install(FILES
