@@ -82,7 +82,7 @@ You may then run the original simulator with
 Please also refer to [this wiki](https://github.com/JenniferBuehler/jb-ros-packs/wiki/The-Graspit-simulator) for instruction on how to use the simulator.
 
 
-### Note about the Locale conflicts in the original source
+# Note about the Locale conflicts in the original source
 
 If your system is not set to default US Locale (in particular, where floating points are specified with dots (.) and not commas (,)), there will be a conflict with reading the GraspIt files. The problem becomes apparent as soon as you try to load the GraspIt contact file for your robot, and the contact's won't load. The reason for this is that QApplication (in the QT4 library) changes the Locale, and afterwards some *fscanf* calls fail to read the proper values.
 
