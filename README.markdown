@@ -11,7 +11,7 @@ This package will compile:
 * A C++ library for the original GraspIt code 
 * The original simulator executable (with graphical interface)
 
-# Prerequisites
+# Installation
 
 You will need the following libraries in order to compile GraspIt!:
 * Qt 4 (ubuntu packages *libqt4-dev, libqt4-opengl-dev* and *libqt4-sql-psql*)
@@ -19,25 +19,59 @@ You will need the following libraries in order to compile GraspIt!:
 * SoQt (ubuntu package *libsoqt4-dev*)
 * Blas and Lapack (ubuntu packages *libblas-dev* and *libblas-dev*)
 
-# Installation
+For example, if you are on Ubuntu/Debian, install them with:
 
-Simply add this package to your catkin workspace and then you can compile it with 
+``sudo apt-get install libsoqt4-dev libcoin80-dev libqt4-dev libblas-dev liblapack-dev``
+
+Then, simply add this package to your catkin workspace and then you can compile it with 
 
 ``catkin_make``
 
-In order to run the original simulator (with GUI), you will need to set an environment variable called *GRASPIT* to point to the main source directory *Graspit*. 
-This is needed for GraspIt to run properly, not for compiling.         
+Or, to compile without catkin, you may also use cmake:
 
-``echo "export GRASPIT=<path to graspit_ros>/Graspit" >> ~/.bashrc``    
+```
+cd <graspit-dir>
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=<graspit-install-location> ..
+make
+make install
+```
 
-``source ~/.bashrc``
+# Setting up GraspIt!
 
-All your GraspIt robot, model and world files must be located in the *models* and *world* directories which you can find in the *$GRASPIT* directory. It is enough if you create soft links to your robot directory (containing the GraspIt robot description) in the folder *$GRASPIT/models/robots* (same for your objects which belong into *$GRASPIT/models/objects*).
+You will need to set up the graspit folders before you can load world files.
 
-``cd $GRASPIT/models/robots``
+**1. Create environment variable**
 
-``ls -s <path-to-YOUR_ROBOT-folder>``
+You will need to create an environment variable called GRASPIT to point to the root folder of the [graspit](https://github.com/JenniferBuehler/graspit) repository.
 
+```
+echo "export GRASPIT=<path to graspit>" >> ~/.bashrc    
+source ~/.bashrc
+```
+
+**2. Soft-link your robot files**
+
+You will also need to add a soft link to your robot's graspit files in the $GRASPIT directory.
+Your robots graspit files should be organised in the same directory structure as the models/ and worlds/ directories in the $GRASPIT directory:
+
+- models/robots/YOUR\_ROBOT
+   - eigen: contains eigen.xml    
+   - iv: contains all inventor geometry folders    
+   - YOUR\_ROBOT.xml    
+   - virtual: contains contacts.vgr      
+- worlds: 
+    - YOUR\_ROBOT\_world.xml
+
+All your GraspIt robot, model and world files must be located in the *models* and *world* directories in the *$GRASPIT* directory. It is enough if you create soft links to your robot directory models/robots/YOUR\_ROBOT in the folder *$GRASPIT/models/robots* (same for your objects which belong into *$GRASPIT/models/objects*).
+
+```
+cd $GRASPIT/models/robots
+ls -s <path-to: models/robots/YOUR\_ROBOT>
+```
+
+# Running the simulator
 
 You may then run the original simulator with
 
@@ -45,26 +79,7 @@ You may then run the original simulator with
 
 # Planning with GraspIt
 
-Before you can start planning with the GraspIt simulator, you will need the GraspIt world and model files. You can generate a GraspIt format for your robot with the 
-[urdf2graspit](https://github.com/JenniferBuehler/jb-ros-packs/urdf2graspit) package using your robot's URDF description.
- 
-You can try the jaco example delivered in [this package](https://github.com/JenniferBuehler/jb-ros-packs/jaco_arm), but keep in mind that this is not an ideal hand to grasp, as the joints in the middle of the fingers are not actuated (the way they work cannot be simulated). It is planned to provide other example hands.
-
-You can also try the hands which come in the ``$GRASPIT/models`` directory. 
-
-Here's how you use the GraspIt EigenGrasp planner:
-
-* To load up your robot, open the world file which includes the object. 
-
-* To start planning, go to ``Grasp --> EigenGrasp Planner`` and change any options, or leave them on default.
-
-* If the hand contact points are not loaded yet (checkbox "preset contact" on the top right unchecked), you need to load them first, otherwise the planning results are not going to be very good.
-
-* Click on ``Init`` to initialize the algorihm (I usually use Axis-angle). Then, click on the ``>`` symbol to start planning and watch the hand try different positions.
-
-* Each time you run the planning, you may get different results.
-
-For more information on how to plan with GraspIt, please refer to the [official documentation](http://www.cs.columbia.edu/~cmatei/graspit/). A more detailed tutorial is planned to be added here at a later time.
+Please also refer to [this wiki](https://github.com/JenniferBuehler/jb-ros-packs/wiki/The-Graspit-simulator) for instruction on how to use the simulator.
 
 
 ### Note about the Locale conflicts in the original source
