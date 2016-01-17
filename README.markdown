@@ -1,4 +1,4 @@
-# graspit
+### graspit
 
 Forks off the original graspit repository which contains the original GraspIt source and adds some changes, specifically:
 
@@ -11,7 +11,7 @@ This package will compile:
 * A C++ library for the original GraspIt code 
 * The original simulator executable (with graphical interface)
 
-# Installation
+### Installation
 
 You will need the following libraries in order to compile GraspIt!:
 * Qt 4 (ubuntu packages *libqt4-dev, libqt4-opengl-dev* and *libqt4-sql-psql*)
@@ -38,7 +38,7 @@ make
 make install
 ```
 
-# Setting up GraspIt!
+### Setting up GraspIt!
 
 You will need to set up the graspit folders before you can load world files.
 
@@ -71,18 +71,18 @@ cd $GRASPIT/models/robots
 ls -s <path-to: models/robots/YOUR\_ROBOT>
 ```
 
-# Running the simulator
+### Running the simulator
 
 You may then run the original simulator with
 
 ``rosrun graspit_ros graspit_simulator``
 
-# Planning with GraspIt
+### Planning with GraspIt
 
 Please also refer to [this wiki](https://github.com/JenniferBuehler/jb-ros-packs/wiki/The-Graspit-simulator) for instruction on how to use the simulator.
 
 
-# Note about the Locale conflicts in the original source
+### Note about the Locale conflicts in the original source
 
 If your system is not set to default US Locale (in particular, where floating points are specified with dots (.) and not commas (,)), there will be a conflict with reading the GraspIt files. The problem becomes apparent as soon as you try to load the GraspIt contact file for your robot, and the contact's won't load. The reason for this is that QApplication (in the QT4 library) changes the Locale, and afterwards some *fscanf* calls fail to read the proper values.
 
