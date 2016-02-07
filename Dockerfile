@@ -1,13 +1,11 @@
-#This should be run with 
-# docker run -it --rm \
-#     -e DISPLAY=$DISPLAY \
-#     -v /tmp/.X11-unix:/tmp/.X11-unix \  
-#     jenniferbuehler/graspit graspit_simulator 
+# This docker image does not support graphical interfaces,
+# because support for this depends on the locally used
+# graphics card.
+# The GRASPIT environment variable is set to 
+# the folder /graspit_home on the local image. So to 
+# connect this folder with the GRASPIT home on your 
+# computer, run with:
 #
-# The -e and -v commands are needed to display on the host X server.
-# Maybe also will need:
-#  --privileged   (to access the graphics card) 
-
 FROM ubuntu:14.04
 
 MAINTAINER Jennifer Buehler
@@ -37,8 +35,6 @@ RUN apt-get update && apt-get install -y g++ \
     && rm -rf /var/lib/apt/lists/*
 
 
-RUN bin/bash -c "rm -rf graspit && mkdir -p graspit"
-# RUN bin/bash -c "mkdir -p graspit"
 RUN bin/bash -c "mkdir -p graspit/build"
 
 COPY CMakeLists.txt /graspit/
@@ -60,6 +56,10 @@ RUN bin/bash -c "cd graspit/build \
      && cmake -DCMAKE_INSTALL_PREFIX=/usr/ .. \
      && make \
      && make install"
+
+RUN bin/bash -c "mkdir -p /graspit_home"
+
+ENV GRASPIT /graspit_home
 
 # setup entrypoint
 # COPY ./entrypoint /
