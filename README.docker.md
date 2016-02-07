@@ -1,6 +1,8 @@
 This docker image does not support graphical interfaces with OpenGL,
 because support for this depends on the locally used
 graphics card.
+The problem is that it looks like the same graphic drivers as the
+host is required in order to enable hardware acceleartion.
 
 This image installs graspit in the /usr directory of the image.
 
