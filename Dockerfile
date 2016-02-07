@@ -1,0 +1,68 @@
+#This should be run with 
+# docker run -it --rm \
+#     -e DISPLAY=$DISPLAY \
+#     -v /tmp/.X11-unix:/tmp/.X11-unix \  
+#     jenniferbuehler/graspit graspit_simulator 
+#
+# The -e and -v commands are needed to display on the host X server.
+# Maybe also will need:
+#  --privileged   (to access the graphics card) 
+
+FROM ubuntu:14.04
+
+MAINTAINER Jennifer Buehler
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# setup environment
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+
+# Install system essentials
+RUN apt-get update && apt-get install -y \
+    cmake \
+    libsoqt4-dev \
+    libcoin80-dev \
+    libqt4-dev \
+    libblas-dev \
+    liblapack-dev \
+    libqhull-dev \
+    sudo \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# need g++ for compiling with cmake even if gcc
+# is already installed
+RUN apt-get update && apt-get install -y g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+
+RUN bin/bash -c "rm -rf graspit && mkdir -p graspit"
+# RUN bin/bash -c "mkdir -p graspit"
+RUN bin/bash -c "mkdir -p graspit/build"
+
+COPY CMakeLists.txt /graspit/
+COPY CMakeMacros /graspit/CMakeMacros
+COPY cmdline/ /graspit/cmdline
+COPY images /graspit/images
+COPY include /graspit/include
+COPY models /graspit/models
+COPY plugins /graspit/plugins
+COPY ply /graspit/ply
+COPY qhull /graspit/qhull
+COPY src /graspit/src
+COPY test /graspit/test
+COPY tinyxml /graspit/tinyxml
+COPY ui /graspit/ui
+COPY worlds /graspit/worlds
+
+RUN bin/bash -c "cd graspit/build \
+     && cmake -DCMAKE_INSTALL_PREFIX=/usr/ .. \
+     && make \
+     && make install"
+
+# setup entrypoint
+# COPY ./entrypoint /
+
+# ENTRYPOINT ["/entrypoint"]
+CMD ["bash"]
