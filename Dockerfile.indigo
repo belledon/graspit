@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y \
 RUN bin/bash -c "cd /catkin_ws/src && mkdir graspit"
 
 COPY CMakeLists.txt /catkin_ws/src/graspit/
+COPY package.xml /catkin_ws/src/graspit/
 COPY CMakeMacros /catkin_ws/src/graspit/CMakeMacros
 COPY cmdline /catkin_ws/src/graspit/cmdline
 COPY images /catkin_ws/src/graspit/images
