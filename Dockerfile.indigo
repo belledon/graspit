@@ -1,0 +1,81 @@
+# In order to support graphical interfaces,
+# this should be run with 
+# docker run -it --rm \
+#     -e DISPLAY=$DISPLAY \
+#     -v /tmp/.X11-unix:/tmp/.X11-unix \  
+#     ros-indigo-full-catkin <cmd> 
+#
+# The -e and -v commands are needed to display on the host X server.
+# For hardware support, you will also need:
+#  --privileged   (to access the graphics card) 
+#  It may also be required to call
+#  $ xhost +
+#  before running the container.
+
+FROM jenniferbuehler/ros-indigo-full-catkin 
+
+MAINTAINER Jennifer Buehler
+
+# Install required dependencies
+RUN apt-get update && apt-get install -y \
+    libsoqt4-dev \
+    libcoin80-dev \
+    libqt4-dev \
+    libblas-dev \
+    liblapack-dev \
+    libqhull-dev \
+    sudo \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install required ROS dependencies
+RUN apt-get update && apt-get install -y \
+    ros-indigo-household-objects-database \
+    && rm -rf /var/lib/apt/lists/
+
+# get graspit git repo
+RUN bin/bash -c "cd /catkin_ws/src && mkdir graspit"
+
+COPY CMakeLists.txt /catkin_ws/src/graspit/
+COPY CMakeMacros /catkin_ws/src/graspit/CMakeMacros
+COPY cmdline /catkin_ws/src/graspit/cmdline
+COPY images /catkin_ws/src/graspit/images
+COPY include /catkin_ws/src/graspit/include
+COPY models /catkin_ws/src/graspit/models
+COPY plugins /catkin_ws/src/graspit/plugins
+COPY ply /catkin_ws/src/graspit/ply
+COPY qhull /catkin_ws/src/graspit/qhull
+COPY src /catkin_ws/src/graspit/src
+COPY test /catkin_ws/src/graspit/test
+COPY tinyxml /catkin_ws/src/graspit/tinyxml
+COPY ui /catkin_ws/src/graspit/ui
+COPY worlds /catkin_ws/src/graspit/worlds
+
+# TODO: We still have to make sure that in <graspit-dir>/CMakeLists.txt:
+# set (BUILD_TESTS false)
+# However for now this is default in my fork of graspit.
+# After that, we could ensure that the instructions to set up gtest
+# are done here as well.
+
+# Build
+RUN bin/bash -c "source /.bashrc \
+    && cd /catkin_ws \
+    && catkin_make \
+    && catkin_make install"
+
+# set GRASPIT environment to /graspit_home
+RUN bin/bash -c "mkdir -p /graspit_home"
+ENV GRASPIT /graspit_home
+
+# set PATH to the catkin install directory
+# RUN bin/bash -c "echo 'export PATH=$PATH:/catkin_ws/install/lib/' >> .bashrc"
+# RUN bin/bash -c "cat .bashrc >> .profile"
+ENV PATH ${PATH}:/catkin_ws/install/lib/
+
+RUN bin/bash -c "source .bashrc"
+
+# setup entrypoint
+COPY ./docker.entrypoint.sh /
+ENTRYPOINT ["/docker.entrypoint.sh"]
+
+CMD ["bash","-l"]
