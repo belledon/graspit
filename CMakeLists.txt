@@ -761,11 +761,13 @@ target_link_libraries(graspit
    ${GRASPIT_LINK_LIBRARIES}
 )
 
+
 if(BUILD_STATIC_LIB)
-    target_link_libraries(graspit_simulator graspit)
-elseif(BUILD_STATIC_LIB)
     target_link_libraries(graspit_simulator graspit_static)
+else(BUILD_STATIC_LIB)
+    target_link_libraries(graspit_simulator graspit)
 endif(BUILD_STATIC_LIB)
+
 
 #############
 ## Install ##
