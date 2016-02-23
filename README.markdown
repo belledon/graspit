@@ -11,9 +11,15 @@ This package will compile:
 * A C++ library for the original GraspIt code 
 * The original simulator executable (with graphical interface)
 
-
+For more information, please also refer to [this wiki](https://github.com/JenniferBuehler/graspit-pkgs/wiki/).
 
 ###Installation
+
+You can use cmake to compile GraspIt!.
+Note for the cmake command below:
+by passing the additional argument ``-DBUILD_STATIC_LIB:BOOL=true`` you may additionally
+build the static library. In this case, the executable *graspit_simulator* will be linked
+to the static library.
 
 ```
 cd <graspit-dir>
@@ -24,15 +30,15 @@ make
 make install
 ```
 
+
 *Note*: If you decide to build the GraspIt! tests as well (using cmake
 argument ``-DBUILD_TESTS:BOOL=true``) you may need to compile gtest libraries as well.
 See the Appendix of this page for instructions.
 
 
-
 ### Planning with GraspIt
 
-Please also refer to [this wiki](https://github.com/JenniferBuehler/jb-ros-packs/wiki/The-Graspit-simulator) for instruction on how to use the simulator.
+Please also refer to [this wiki](https://github.com/JenniferBuehler/graspit-pkgs/wiki/The-Graspit-simulator) for instruction on how to use the simulator.
 
 
 ### Note about the Locale conflicts in the original source
