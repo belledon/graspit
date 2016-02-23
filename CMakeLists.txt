@@ -718,6 +718,7 @@ add_library(graspit SHARED
     ${GRASPIT_LIBRARY_SOURCES} 
 )
 
+set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC)
 add_library(graspit_static STATIC 
     ${GRASPIT_LIBRARY_SOURCES} 
 )
