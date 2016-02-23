@@ -721,7 +721,8 @@ add_library(graspit SHARED
 add_library(graspit_static STATIC 
     ${GRASPIT_LIBRARY_SOURCES} 
 )
-set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC)
+#set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC)
+target_compile_options(graspit_static PRIVATE -fPIC)
 #target_compile_definitions(graspit_static PRIVATE -fPIC)
 
 ## Add cmake target dependencies of the library
