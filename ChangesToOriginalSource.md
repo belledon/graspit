@@ -11,7 +11,6 @@ Details about the changes applied to the original source:
         - added implementation of:
             - virtual void viewAll()
         - removed *#define MAX_COLLISIONS* and *#define MAX_POLYTOPES* statements and moved them to *IVmgrAbstract*
-
 - class World:
     * world.h:
         - All references to *IVmgr* has been changed to *IVmgrAbstract* (3 changes)

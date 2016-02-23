@@ -35,7 +35,6 @@
 #include <qwidget.h>
 #include "material.h"
 #include "ivmgr_abstract.h"
-
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
 
 struct VCReportType;

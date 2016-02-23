@@ -611,7 +611,6 @@ set (MOC_HEADERS
 ## Generate Qt files for the icon sets  ## 
 ##########################################
 
-
 # Custom command to create an image collection with uic3 (it has to be uic3, not uic) like this: 
 # uic3 -embed graspit -o qt_image_collection.cpp path_to_my_images/*
 # The qt_image_collection.cpp must then be added to the sources to compile.
@@ -620,8 +619,8 @@ set (MOC_HEADERS
 ADD_CUSTOM_COMMAND(OUTPUT 
     ${CMAKE_CURRENT_BINARY_DIR}/qt_image_collection.cpp 
     COMMAND ${QT_UIC3_EXECUTABLE} 
-        ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/qt_image_collection.cpp 
-             -embed graspit ${GRASPIT_IMAGES} 
+    ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/qt_image_collection.cpp 
+        -embed graspit ${GRASPIT_IMAGES} 
     DEPENDS ${GRASPIT_IMAGES})
 
 SET(GRASPIT_IMAGE_SOURCES 
@@ -724,6 +723,11 @@ add_library(graspit SHARED
     ${GRASPIT_LIBRARY_SOURCES} 
 )
 
+#add_library(graspit_qt_image_collection
+#    SHARED
+#    ${GRASPIT_IMAGE_SOURCES}
+#)
+
 if(BUILD_STATIC_LIB)
     add_library(graspit_static STATIC 
         ${GRASPIT_LIBRARY_SOURCES} 
@@ -734,20 +738,29 @@ if(BUILD_STATIC_LIB)
     target_compile_options(graspit_static PRIVATE -fPIC)
 endif(BUILD_STATIC_LIB)
 
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-# add_dependencies(graspit ${${PROJECT_NAME}_EXPORTED_TARGETS})
+# sources for executable graspit_simulator
+set(SIMULATOR_SRC ${GSRC}/src/main.cpp)
+
+if (BUILD_STATIC_LIB)
+    # the graspit_simulator executable can still not be linked
+    # with a static library, the problem being the QPixmap resources
+    # (see also: https://wiki.qt.io/QtResources)
+    # With a static library they can't be found, and Q_INIT_RESOURCE can only be done
+    # with a .qrt file (which I tried to use but QT4_ADD_RESOURCES doesn't work).
+    # So for now, compile all sources into the graspit_simulator directly.
+    set(SIMULATOR_SRC 
+        ${GRASPIT_LIBRARY_SOURCES}
+        ${SIMULATOR_SRC}
+    )
+endif (BUILD_STATIC_LIB)
+
 
 ## Make simulator executable
 add_executable(graspit_simulator 
-    ${GSRC}/src/main.cpp
+    ${SIMULATOR_SRC}
 )
 
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(graspit_simulator ${${PROJECT_NAME}_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
+## System libraries which are needed for graspit
 set(GRASPIT_LINK_LIBRARIES
    ${QT_LIBRARIES}
    ${QT_QT3SUPPORT_LIBRARY}
@@ -761,10 +774,9 @@ target_link_libraries(graspit
    ${GRASPIT_LINK_LIBRARIES}
 )
 
-
 if(BUILD_STATIC_LIB)
     target_link_libraries(graspit_static ${GRASPIT_LINK_LIBRARIES})
-    target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES} graspit_static)
+    target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES})
 else(BUILD_STATIC_LIB)
     target_link_libraries(graspit_simulator graspit)
 endif(BUILD_STATIC_LIB)
