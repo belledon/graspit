@@ -763,7 +763,7 @@ target_link_libraries(graspit
 
 
 if(BUILD_STATIC_LIB)
-    target_link_libraries(graspit_simulator graspit_static)
+    target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES} graspit_static)
 else(BUILD_STATIC_LIB)
     target_link_libraries(graspit_simulator graspit)
 endif(BUILD_STATIC_LIB)
