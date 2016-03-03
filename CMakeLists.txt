@@ -743,7 +743,7 @@ if(BUILD_STATIC_LIB)
         target_compile_options(graspit_static PRIVATE -fPIC)  # does not work for bloom-release on saucy. Could 
     else ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
         message("Using target_compile_definitions with cmake version ${CMAKE_VERSION}")
-        # not recommended, but works with catkin
+        # not recommended, but works with catkin:
         set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC)
         # This would be better, but when compiling with catkin (and on bloom prerelease), has error 
         # "<command-line>:0:1: error: macro names must be identifiers":
