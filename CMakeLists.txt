@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.8.3)
 project(graspit)
 
 
@@ -738,10 +738,14 @@ if(BUILD_STATIC_LIB)
     add_library(graspit_static STATIC 
         ${GRASPIT_LIBRARY_SOURCES} 
     )
-
     # set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC): not recommended, but works
-    # target_compile_definitions(graspit_static PUBLIC -fPIC) #: when compiling with catkin, has error "<command-line>:0:1: error: macro names must be identifiers"
-    target_compile_options(graspit_static PRIVATE -fPIC)  # does not work for bloom-release on saucy. Could 
+    if (CMAKE_VERSION VERSION_GREATER 2.8.11)
+        message("Using target_compile_options")
+        target_compile_options(graspit_static PRIVATE -fPIC)  # does not work for bloom-release on saucy. Could 
+    else (CMAKE_VERSION VERSION_GREATER 2.8.11)
+        message("Using target_compile_definitions")
+        target_compile_definitions(graspit_static PUBLIC -fPIC) #: when compiling with catkin, has error "<command-line>:0:1: error: macro names must be identifiers"
+    endif (CMAKE_VERSION VERSION_GREATER 2.8.11)
 endif(BUILD_STATIC_LIB)
 
 
