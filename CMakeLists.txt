@@ -909,13 +909,15 @@ endif (PLY)
 
 # Generate and install configuration files for libraries:
 
-install(TARGETS
-    graspit 
-    EXPORT graspit-lib-targets
-    DESTINATION ${LIB_DESTINATION})
+if (NOT SKIP_SHARED_LIB)
+    install(TARGETS
+        graspit 
+        EXPORT graspit-lib-targets
+        DESTINATION ${LIB_DESTINATION})
 
-install(EXPORT graspit-lib-targets
-    DESTINATION ${LIB_DESTINATION})
+    install(EXPORT graspit-lib-targets
+        DESTINATION ${LIB_DESTINATION})
+endif (NOT SKIP_SHARED_LIB)
 
 if(BUILD_STATIC_LIB)
     install(TARGETS
