@@ -17,7 +17,7 @@ RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 
 # required for saucy 13.10:
-# RUN bin/bash -c "cd /etc/apt && mkdir test && cp sources.list test/ \
+#RUN bin/bash -c "cd /etc/apt && mkdir test && cp sources.list test/ \
 #    && cd test && sed -i -- 's/archive/old-releases/g' * \
 #    && cat sources.list && cp sources.list ../ && apt-get update"
 
