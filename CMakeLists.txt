@@ -740,8 +740,8 @@ if(BUILD_STATIC_LIB)
     )
 
     # set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC): not recommended, but works
-    # target_compile_definitions(graspit_static PRIVATE -fPIC): when compiling with catkin, has error "<command-line>:0:1: error: macro names must be identifiers"
-    target_compile_options(graspit_static PRIVATE -fPIC)
+    target_compile_definitions(graspit_static PUBLIC -fPIC) #: when compiling with catkin, has error "<command-line>:0:1: error: macro names must be identifiers"
+    # target_compile_options(graspit_static PRIVATE -fPIC)
 endif(BUILD_STATIC_LIB)
 
 
