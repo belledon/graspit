@@ -26,6 +26,10 @@ if (NOT BUILD_STATIC_LIB)
     set (BUILD_STATIC_LIB false)
 endif (NOT BUILD_STATIC_LIB)
 
+if (NOT SKIP_SHARED_LIB)
+    set (SKIP_SHARED_LIB false)
+endif (NOT SKIP_SHARED_LIB)
+
 set (GRASPIT_DEFINES 
     -DGRASPIT_RELEASE  
     #-DGRASPIT_DEBUG 
@@ -718,10 +722,12 @@ set (GRASPIT_LIBRARY_SOURCES
     ${UI_OUTFILES}
     ${MOC_OUTFILES}
 )
-## Declare a C++ library
-add_library(graspit SHARED
-    ${GRASPIT_LIBRARY_SOURCES} 
-)
+
+if (NOT SKIP_SHARED_LIB)
+    add_library(graspit SHARED
+        ${GRASPIT_LIBRARY_SOURCES} 
+    )
+endif (NOT SKIP_SHARED_LIB)
 
 #add_library(graspit_qt_image_collection
 #    SHARED
@@ -737,6 +743,9 @@ if(BUILD_STATIC_LIB)
     # target_compile_definitions(graspit_static PRIVATE -fPIC): when compiling with catkin, has error "<command-line>:0:1: error: macro names must be identifiers"
     target_compile_options(graspit_static PRIVATE -fPIC)
 endif(BUILD_STATIC_LIB)
+
+
+## Make simulator executable
 
 # sources for executable graspit_simulator
 set(SIMULATOR_SRC ${GSRC}/src/main.cpp)
@@ -755,10 +764,11 @@ if (BUILD_STATIC_LIB)
 endif (BUILD_STATIC_LIB)
 
 
-## Make simulator executable
-add_executable(graspit_simulator 
-    ${SIMULATOR_SRC}
-)
+if (NOT SKIP_SHARED_LIB OR BUILD_STATIC_LIB)
+    add_executable(graspit_simulator 
+        ${SIMULATOR_SRC}
+    )
+endif (NOT SKIP_SHARED_LIB OR BUILD_STATIC_LIB)
 
 ## System libraries which are needed for graspit
 set(GRASPIT_LINK_LIBRARIES
@@ -770,15 +780,21 @@ set(GRASPIT_LINK_LIBRARIES
 )
 
 
-target_link_libraries(graspit
-   ${GRASPIT_LINK_LIBRARIES}
-)
+if (NOT SKIP_SHARED_LIB)
+    target_link_libraries(graspit
+       ${GRASPIT_LINK_LIBRARIES}
+    )
+endif (NOT SKIP_SHARED_LIB)
 
+# link the libraries: If a static lib is built, use this one.
+# otherwise, use the shared lib.
 if(BUILD_STATIC_LIB)
     target_link_libraries(graspit_static ${GRASPIT_LINK_LIBRARIES})
     target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES})
 else(BUILD_STATIC_LIB)
-    target_link_libraries(graspit_simulator graspit)
+    if (NOT SKIP_SHARED_LIB)
+        target_link_libraries(graspit_simulator graspit ${GRASPIT_LINK_LIBRARIES})
+    endif(NOT SKIP_SHARED_LIB)
 endif(BUILD_STATIC_LIB)
 
 
@@ -808,8 +824,16 @@ endif (catkin_FOUND)
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
+    
+set(INSTALL_BINS graspit_simulator)
+
+if (NOT SKIP_SHARED_LIB)
+    set(INSTALL_BINS ${INSTALL_BINS} graspit)
+endif (NOT SKIP_SHARED_LIB)
+
+
 ## Mark executables and/or libraries for installation
-install(TARGETS graspit graspit_simulator
+install(TARGETS ${INSTALL_BINS} 
    ARCHIVE DESTINATION ${LIB_DESTINATION}
    LIBRARY DESTINATION ${LIB_DESTINATION}
    RUNTIME DESTINATION ${BIN_DESTINATION}
