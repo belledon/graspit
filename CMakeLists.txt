@@ -740,7 +740,7 @@ if(BUILD_STATIC_LIB)
     )
     if ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
         message("Using target_compile_options with cmake version ${CMAKE_VERSION}")
-        target_compile_options(graspit_static PRIVATE -fPIC)  # does not work for bloom-release on saucy. Could 
+        target_compile_options(graspit_static PRIVATE -fPIC)
     else ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
         message("Using set_target_properties with cmake version ${CMAKE_VERSION}")
         # not recommended, but works with catkin:
