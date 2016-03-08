@@ -2,6 +2,40 @@ cmake_minimum_required(VERSION 2.8.3)
 project(graspit)
 
 
+#########################################
+# By default, compiling with catkin is
+# enabled. It will only be disabled again
+# if CATKIN_DEVEL_PREFIX is not set.
+# To enforce compiling *without* catkin
+# even if CATKIN_DEVEL_PREFIX is defined,
+# compile with the flag -COMPILE_WITH_CATKIN=false
+#########################################
+
+if (NOT DEFINED COMPILE_WITH_CATKIN)
+    message(STATUS "Compiling graspit: COMPILE_WITH_CATKIN is not defined, setting to TRUE by default and **compiling with catkin**.")
+    set (COMPILE_WITH_CATKIN true)
+    set (COMPILE_WITH_CATKIN_DEFAULT true) # flag that compiling with catkin is due to default setting
+endif (NOT DEFINED COMPILE_WITH_CATKIN)
+
+if (COMPILE_WITH_CATKIN AND NOT DEFINED COMPILE_WITH_CATKIN_DEFAULT)
+    message(STATUS "Compiling graspit: COMPILE_WITH_CATKIN is true, so **compiling with catkin**.")
+endif (COMPILE_WITH_CATKIN AND NOT DEFINED COMPILE_WITH_CATKIN_DEFAULT)
+
+if (NOT COMPILE_WITH_CATKIN)
+    message(STATUS "Compiling graspit: COMPILE_WITH_CATKIN is false, so **compiling with cmake.**")
+    set (ENFORCE_CMAKE true)
+endif (NOT COMPILE_WITH_CATKIN)
+
+if (COMPILE_WITH_CATKIN AND NOT CATKIN_DEVEL_PREFIX)
+    set(MSG_STATUS STATUS)
+    if (NOT COMPILE_WITH_CATKIN_DEFAULT)
+        set(MSG_STATUS WARNING)
+    endif (NOT COMPILE_WITH_CATKIN_DEFAULT)
+    message(${MSG_STATUS} "Compiling graspit: COMPILE_WITH_CATKIN is true, but CATKIN_DEVEL_PREFIX is not defined, so **enforcing compilation with cmake**.")
+    set (COMPILE_WITH_CATKIN false)
+endif (COMPILE_WITH_CATKIN AND NOT CATKIN_DEVEL_PREFIX)
+
+
 ####################################
 ## Define graspit variables ####### 
 ####################################
@@ -43,12 +77,9 @@ set (GRASPIT_DEFINES
 # catkin is optional, and only to be used when added 
 # as ROS package and compiling with catkin_make. 
 # CATKIN_DEVEL_PREFIX is only defined if building with catkin
-if (CATKIN_DEVEL_PREFIX)
-    message("Building graspit with catkin.")
-    find_package(catkin) 
-else (CATKIN_DEVEL_PREFIX)
-    message("Building graspit without catkin.")
-endif (CATKIN_DEVEL_PREFIX) 
+if (COMPILE_WITH_CATKIN)
+    find_package(catkin REQUIRED) 
+endif (COMPILE_WITH_CATKIN) 
 
 set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeMacros/")
 
@@ -645,11 +676,11 @@ set (GRASPIT_UI_INCLUDE_DIRNAME ui)
 # we will need to create a special folder named GRASPIT_UI_INCLUDE_DIRNAME
 # into which to generate the UI files, so that they can be included from
 # the graspit header files with the right prefix.
-if (catkin_FOUND) 
+if (COMPILE_WITH_CATKIN) 
     set (GRASPIT_UI_INCLUDE_PATH ${CATKIN_DEVEL_PREFIX}/include/${PROJECT_NAME}/${GRASPIT_UI_INCLUDE_DIRNAME})
-else (catkin_FOUND) 
+else (COMPILE_WITH_CATKIN) 
     set (GRASPIT_UI_INCLUDE_PATH ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/${GRASPIT_UI_INCLUDE_DIRNAME})
-endif (catkin_FOUND) 
+endif (COMPILE_WITH_CATKIN) 
     
 file(MAKE_DIRECTORY ${GRASPIT_UI_INCLUDE_PATH})
 
@@ -674,10 +705,10 @@ set (GRASPIT_INCLUDES
      ${QHULL_INCLUDE_DIRS}
 )
 
-if (catkin_FOUND) 
+if (COMPILE_WITH_CATKIN) 
     set (GRASPIT_INCLUDES ${GRASPIT_INCLUDES} ${catkin_INCLUDES})
     set (${PROJECT_NAME}_EXPORTED_TARGETS ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-endif (catkin_FOUND) 
+endif (COMPILE_WITH_CATKIN) 
 
 ## Specify additional locations of header files
 include_directories(
@@ -686,7 +717,7 @@ include_directories(
 )
 
 
-if (catkin_FOUND) 
+if (COMPILE_WITH_CATKIN) 
     ###################################
     ## catkin specific configuration ##
     ###################################
@@ -700,9 +731,10 @@ if (catkin_FOUND)
       INCLUDE_DIRS ${GSRC}/include ${GRASPIT_INCLUDES}  
       LIBRARIES graspit
       #  CATKIN_DEPENDS 
-      DEPENDS ${QT_LIBRARIES} ${QT_QT3SUPPORT_LIBRARY} ${QHULL_LIBRARIES} ${SOQT_LIBRARY}
+      # DEPENDS ${QT_LIBRARIES} ${QT_QT3SUPPORT_LIBRARY} ${QHULL_LIBRARIES} ${SOQT_LIBRARY}
+      DEPENDS libsoqt4-dev libqt4 libqt4-dev libqt4-opengl libqt4-sql-psql libqhull libcoin80-dev libblas-dev liblapack-dev ${QT_QT3SUPPORT_LIBRARY}
     )
-endif (catkin_FOUND) 
+endif (COMPILE_WITH_CATKIN) 
 
 
 ############
@@ -810,19 +842,19 @@ endif(BUILD_STATIC_LIB)
 ## Install ##
 #############
 
-if (catkin_FOUND) 
+if (COMPILE_WITH_CATKIN) 
     # all install targets should use catkin DESTINATION variables
     # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
     set ( INCLUDE_DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
     set ( LIB_DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
     set ( BIN_DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
     set ( SHARE_DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-else (catkin_FOUND) 
+else (COMPILE_WITH_CATKIN) 
     set ( INCLUDE_DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/)
     set ( LIB_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/)
     set ( BIN_DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     set ( SHARE_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/)
-endif (catkin_FOUND) 
+endif (COMPILE_WITH_CATKIN) 
 
 
 ## Mark executable scripts (Python etc.) for installation
