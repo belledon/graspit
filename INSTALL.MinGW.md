@@ -55,12 +55,12 @@ And for qhull: find out package name with ``pacman -Ss qhull`` and install with 
 A good set of instructions can be found on [this link](https://github.com/iat-cener/tonatiuh/wiki/Installing-SoQt-For-Windows).
 Please refer to these instructions for installation.
 
-There are binaries as well, but they are not the most recent version any more (found on [this link](http://ascend4.org/Building_Coin3d_and_SoQt_on_MinGW) which may be useful)).
+There are binaries as well, but they are not the most recent version any more (found on [this link](http://ascend4.org/Building_Coin3d_and_SoQt_on_MinGW)).
 
 A few general notes:
 
 *Coin*    
-- use the extra configure flag  ``--build=x86_64-w64-mingw32`` (you could try to use output of ``gcc -dumpmachine`` but this may refer to the MSYS gcc (not the MinGW gcc)).
+- Use the extra configure flag  ``--build=x86_64-w64-mingw32`` (you could try to use output of ``gcc -dumpmachine`` but this may refer to the MSYS gcc (not the MinGW gcc)).
 - As of May 2016, the source code had to be edited as suggested in the instructions, except the change in freetype.cpp which was not necessary
 - You also may need to install diffutils: ``pacman -S diffutils``
 - The Coin *bin* directory has to be in the PATH environment variable
@@ -70,7 +70,7 @@ A few general notes:
 
 **Install bullet**
 
-This was straight forward with cmake right [out of repository](https://github.com/bulletphysics/bullet3)
+This was straight forward with cmake right [out of repository](https://github.com/bulletphysics/bullet3).
 
 **Compile graspit**
 
