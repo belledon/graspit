@@ -78,6 +78,7 @@ For compiling with cmake, the path to the MSYS bash.exe is required for being ab
 You need to pass the path to bash.exe (probably this is ``<your-msys-install>/usr/bin``) in the CMAKE_PREFIX_PATH.
 
 Use the cmake GUI to generate make files, and explicitly choose the native compilers and set them to the MinGW gcc.exe/g++exe you installed in the first step:
+
 1. Select source and build directory, then click "Configure"
 2. Select "MinGW Makefiles", and you may first try to stick to the default compilers. If it does not compile or have other issues, try to re-run cmake and this time select "Specify native compilers", choosing the fortran.exe/gcc.exe/g++.exe from your MinGW install (the one built for Qt in the first step above).
 3. The first configuration process may be unsuccessful because not all directories are included. Add the path to bash.exe, the path to the Qt files (QTDIR), and any other dependency directories in a "New Entry" named CMAKE_PREFIX_PATH.
