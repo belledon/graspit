@@ -1,0 +1,9 @@
+  
+        upstream_merge_base
+
+abstract_ivmgr  locale_compatibility    windows_install ?
+
+    abstract_ivmgr_locale_compatibility  - merge of others, added changes in body and world
+        new_master_in_dev  - added changes in EGPlanner and the cmake files (and one small change in searchState.h, searchEnergy.h, simAnn.h about in the #include matvec) to build the new master
+
+all other branches are old rubbish 

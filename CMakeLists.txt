@@ -10,6 +10,43 @@ if(NOT CMAKE_BUILD_TYPE)
      FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
+
+###################################################
+## Define cmake variables to build with/without catkin 
+###################################################
+
+# By default, compiling with catkin is
+# enabled. It will only be disabled again
+# if CATKIN_DEVEL_PREFIX is not set.
+# To enforce compiling *with* catkin
+# even if CATKIN_DEVEL_PREFIX is not defined,
+# compile with the flag -DENFORCE_CATKIN=true
+
+# To enforce compiling with catkin in ANY case,
+# set ENFORCE_CATKIN to true. This is for example
+# required when compiling with jenkins, when
+# it seems that CATKIN_DEVEL_PREFIX is not set.
+# So set ENFORCE_CATKIN to true only for the commits
+# to jenkins.
+set (ENFORCE_CATKIN false)
+   
+# Private flag: compiling with catkin is prioritized by default.
+# This flag will be set to false if CATKIN_DEVEL_PREFIX
+# is empty/not defined, **and** ENFORCE_CATKIN is false.
+set (COMPILE_WITH_CATKIN true)
+
+if (NOT ENFORCE_CATKIN AND NOT CATKIN_DEVEL_PREFIX)
+    message(STATUS "Compiling grasp_planning_graspit: CATKIN_DEVEL_PREFIX is not defined, so **enforcing compilation with cmake**.")
+    set (COMPILE_WITH_CATKIN false)
+endif (NOT ENFORCE_CATKIN AND NOT CATKIN_DEVEL_PREFIX)
+
+if (COMPILE_WITH_CATKIN)
+    find_package(catkin REQUIRED)
+endif (COMPILE_WITH_CATKIN)
+   
+# Configuration file for graspit
+set (GRASPIT_CONFIG_CMAKE graspitConfig.cmake)
+
 ####################################
 ## Define graspit variables ####### 
 ####################################
@@ -40,7 +77,7 @@ set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeMacros/")
 
 find_package(Qhull REQUIRED)
 find_package(SoQt4 REQUIRED)
-find_package(BLAS REQUIRED)
+#find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
 
@@ -114,6 +151,8 @@ set (GRASPIT_INCLUDEDIR_HEADERS
     ${GSRC}/include/gws.h 
     ${GSRC}/include/gwsprojection.h 
     ${GSRC}/include/ivmgr.h 
+    ${GSRC}/include/ivmgrBase.h 
+    ${GSRC}/include/ivmgrHeadless.h 
     ${GSRC}/include/jacobian.h 
     ${GSRC}/include/joint.h 
     ${GSRC}/include/kinematicChain.h 
@@ -348,6 +387,7 @@ set (GRASPIT_CORE_SOURCES
     ${GSRC}/src/gws.cpp 
     ${GSRC}/src/gwsprojection.cpp 
     ${GSRC}/src/ivmgr.cpp 
+    ${GSRC}/src/ivmgrHeadless.cpp 
     ${GSRC}/src/jacobian.cpp 
     ${GSRC}/src/joint.cpp 
     ${GSRC}/src/kinematicChain.cpp 
@@ -720,9 +760,27 @@ include_directories(
 )
 
 
-############
-## Build  ## 
-############
+
+############################
+## Catkin specifications  ## 
+############################
+if (catkin_FOUND)
+    ###################################
+    ## catkin specific configuration ##
+    ###################################
+    ## The catkin_package macro generates cmake config files for your package
+    ## Declare things to be passed to dependent projects
+    ## INCLUDE_DIRS: uncomment this if you package contains header files
+    ## LIBRARIES: libraries you create in this project that dependent projects also need
+    ## CATKIN_DEPENDS: catkin_packages dependent projects also need
+    ## DEPENDS: system dependencies of this project that dependent projects also need
+    catkin_package(
+        INCLUDE_DIRS ${GRASPIT_INCLUDES} 
+        # LIBRARIES  
+        # CATKIN_DEPENDS roscpp
+        DEPENDS libsoqt4-dev libqt4-dev libcoin80-dev
+    )
+endif (catkin_FOUND)
 
 add_definitions(${GRASPIT_DEFINES} ${SOQT_CXXFLAGS} ${LAPACK_LINKER_FLAGS} -g)
 link_directories(${SOQT_LINK_DIRS} ${QT_LIBRARY_DIR})
@@ -787,10 +845,19 @@ target_link_libraries(graspit ${GRASPIT_LINK_LIBRARIES})
 target_link_libraries(graspit_simulator graspit ${GRASPIT_LINK_LIBRARIES})
 
 ## Set install destination paths
-set ( INCLUDE_DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/)
-set ( LIB_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/)
-set ( BIN_DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-set ( SHARE_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/)
+if (catkin_FOUND) 
+    # all install targets should use catkin DESTINATION variables
+    # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
+    set ( INCLUDE_DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+    set ( LIB_DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+    set ( BIN_DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+    set ( SHARE_DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+else (catkin_FOUND) 
+    set ( INCLUDE_DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/)
+    set ( LIB_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/)
+    set ( BIN_DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    set ( SHARE_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/)
+endif (catkin_FOUND) 
 
 set(INSTALL_BINS graspit_simulator graspit)
 
@@ -877,25 +944,35 @@ endif (PLY)
 ## Install ##
 #############
 
+
 install(TARGETS
     graspit 
     PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
-    EXPORT graspit-lib-targets
-    DESTINATION ${LIB_DESTINATION})
+    EXPORT graspit-targets
+    DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME})
 
-install(EXPORT graspit-lib-targets
-    DESTINATION ${LIB_DESTINATION})
+install(EXPORT graspit-targets
+    DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME})
 
 
 ## ---
 ## comment for future reference: This is required to build a static library
 # install(TARGETS
 #     graspit_static 
-#     EXPORT graspit-static-lib-targets
+#     EXPORT graspit-static-targets
 #     DESTINATION ${LIB_DESTINATION})
-# install(EXPORT graspit-static-lib-targets
+# install(EXPORT graspit-static-targets
 #     DESTINATION ${LIB_DESTINATION})
 ## ---
+
+install(FILES
+    cmake/${GRASPIT_CONFIG_CMAKE}
+    CMakeMacros/FindBULLET.cmake
+    CMakeMacros/FindSoQt4.cmake
+    CMakeMacros/FindQhull.cmake
+    DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME}
+)
+
 
 
 #############
