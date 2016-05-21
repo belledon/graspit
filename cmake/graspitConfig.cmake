@@ -1,14 +1,4 @@
-# Try to find graspit
-# 
-# You can set the variable
-#   graspit_PATH
-# to point to the installation directory of graspit 
-# (the folder which contains the include/ and lib/ dirs)
-# in order to allow searching for it there in addition
-# to /usr/ and /usr/local/
-# 
-# Once done this will define
-# graspit_LIBRARY_FOUND - if graspit is found
+# This will define
 # graspit_CXXFLAGS - extra flags
 # graspit_INCLUDE_DIRS - include directories
 # graspit_LINK_DIRS - link directories
@@ -46,27 +36,27 @@ if (NOT CATKIN_DEVEL_PREFIX)
     else (graspit_INCLUDE_DIR)
         message(SEND_ERROR 
         "Looking for graspit headers -- not found"
-        "Please install graspit or adjust CMAKE_INCLUDE_PATH"
-        "e.g. cmake -DCMAKE_INCLUDE_PATH=/path-to-graspit/include ...")
+        "Please install graspit or adjust CMAKE_PREFIX_PATH"
+        "e.g. cmake -DCMAKE_PREFIX_PATH=/path-to-graspit/ ...")
     endif (graspit_INCLUDE_DIR)
 
     if (graspit_LINK_DIR)
         message(STATUS "Looking for graspit library include -- found " ${graspit_LINK_DIR})
         set(graspit_LINK_DIRS 
-            ${graspit_LINK_DIR}/include/ 
-            ${graspit_LINK_DIR}/include/graspit 
+            ${graspit_LINK_DIR}/lib/ 
+            ${graspit_LINK_DIR}/lib/graspit 
         )
     else (graspit_LINK_DIR)
         message(SEND_ERROR 
         "Looking for graspit library directories -- not found"
-        "Please install graspit or adjust CMAKE_LINK_PATH"
-        "e.g. cmake -DCMAKE_LINK_PATH=/path-to-graspit/lib ...")
+        "Please install graspit or adjust CMAKE_PREFIX_PATH"
+        "e.g. cmake -DCMAKE_PREVIX_PATH=/path-to-graspit/ ...")
     endif (graspit_LINK_DIR)
 
     include(${SELF_DIR}/graspit-targets.cmake)
     set (CMAKE_MODULE_PATH ${SELF_DIR})
 else (NOT CATKIN_DEVEL_PREFIX)
-    # catkin is going to handle the include directories ?? XXX TODO check this
+    # catkin is going to handle the include directories
     include(${CATKIN_DEVEL_PREFIX}/lib/graspit/graspit-targets.cmake)
 endif (NOT CATKIN_DEVEL_PREFIX)
 
@@ -89,14 +79,13 @@ if (graspit_LIBRARY_RELEASE)
 else (graspit_LIBRARY_RELEASE)
  	message(SENDL_ERROR 
 	"Looking for graspit library -- not found"
-    "Please install graspit or adjust CMAKE_LIBRARY_PATH"
-	"e.g. cmake -DCMAKE_LIBRARY_PATH=/path-to-graspit/lib ...")
+    "Please install graspit or adjust CMAKE_PREFIX_PATH"
+    "e.g. cmake -DCMAKE_PREFIX_PATH=/path-to-graspit/ ...")
 endif (graspit_LIBRARY_RELEASE)
 
 # Find the dependencies:
 find_package(Qhull REQUIRED)
 find_package(SoQt4 REQUIRED)
-#find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 find_package(Threads REQUIRED)
 #find_package(BULLET)
@@ -116,10 +105,8 @@ set(graspit_CXXFLAGS ${SOQT_CXXFLAGS} ${LAPACK_LINKER_FLAGS})
 set(graspit_LINK_DIRS ${graspit_LINK_DIRS} ${SOQT_LINK_DIRS} ${QT_LIBRARY_DIR})
 set(graspit_LIBRARIES ${graspit_LIBRARY} ${QT_LIBRARIES} ${QT_QT3SUPPORT_LIBRARY} ${QHULL_LIBRARIES}
     ${SOQT_LIBRARY} ${LAPACK_LIBRARIES} ${BULLET_LIBRARIES})
-#set(graspit_FOUND true)
 
 MARK_AS_ADVANCED(
-    graspit_LIBRARY_FOUND
     graspit_CXXFLAGS
     graspit_LINK_FLAGS
     graspit_INCLUDE_DIRS

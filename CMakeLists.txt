@@ -742,14 +742,19 @@ QT4_WRAP_CPP(MOC_OUTFILES ${MOC_HEADERS})
 
 
 # add Qt stuff to the includes
-set (GRASPIT_INCLUDES 
+set (GRASPIT_BASE_INCLUDES 
      ${GRASPIT_INCLUDES}
-     ${GRASPIT_UI_INCLUDE_PATH}
      ${SOQT_INCLUDE_DIRS}
      ${QT_INCLUDES}
      ${QT_INCLUDE_DIR}
      ${QT_QT3SUPPORT_INCLUDE_DIR}
      ${QHULL_INCLUDE_DIRS}
+)
+
+
+set (GRASPIT_INCLUDES 
+     ${GRASPIT_BASE_INCLUDES}
+     ${GRASPIT_UI_INCLUDE_PATH}
 )
 
 
@@ -775,7 +780,7 @@ if (catkin_FOUND)
     ## CATKIN_DEPENDS: catkin_packages dependent projects also need
     ## DEPENDS: system dependencies of this project that dependent projects also need
     catkin_package(
-        INCLUDE_DIRS ${GRASPIT_INCLUDES} 
+        INCLUDE_DIRS ${GRASPIT_BASE_INCLUDES} 
         # LIBRARIES  
         # CATKIN_DEPENDS roscpp
         DEPENDS libsoqt4-dev libqt4-dev libcoin80-dev
@@ -944,16 +949,14 @@ endif (PLY)
 ## Install ##
 #############
 
-
 install(TARGETS
     graspit 
     PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
     EXPORT graspit-targets
-    DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME})
+    DESTINATION ${LIB_DESTINATION})
 
 install(EXPORT graspit-targets
     DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME})
-
 
 ## ---
 ## comment for future reference: This is required to build a static library
