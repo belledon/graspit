@@ -1481,11 +1481,16 @@ DynamicBody::setCoG(const position &newCoG)
 {
 	CoG = newCoG;  
 	resetDynamics();
-	//use this to display axes at the CoG
-	//axesTranToCOG->translation.setValue(CoG.x(), CoG.y(), CoG.z());
 
-	//use this to display axes at body origin
-	axesTranToCOG->translation.setValue(0,0,0);
+    if (graspItGUI) {
+        //use this to display axes at the CoG
+        //axesTranToCOG->translation.setValue(CoG.x(), CoG.y(), CoG.z());
+
+        //use this to display axes at body origin
+        axesTranToCOG->translation.setValue(0,0,0);
+    }
+
+
 }
 
 /*! The max radius can be thought of as the largest distance from the center
@@ -1495,7 +1500,9 @@ void
 DynamicBody::setMaxRadius(double maxRad)
 {
 	maxRadius = maxRad;
-	axesScale->scaleFactor = SbVec3f(maxRadius / AXES_SCALE, maxRadius / AXES_SCALE, maxRadius / AXES_SCALE);
+    if (graspItGUI) {
+	    axesScale->scaleFactor = SbVec3f(maxRadius / AXES_SCALE, maxRadius / AXES_SCALE, maxRadius / AXES_SCALE);
+    }
 }
 
 void
