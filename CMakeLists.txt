@@ -193,12 +193,25 @@ set (GRASPIT_PLANNER_HEADERS
     ${GSRC}/include/Planner/grasp_directions.h 
     ${GSRC}/include/Planner/grasp_coordinates.h 
 )
+
+set (GRASPIT_EGPLANNER_ENERGY_HEADERS
+    ${GSRC}/include/EGPlanner/energy/autograspQualityEnergy.h 
+    ${GSRC}/include/EGPlanner/energy/closureSearchEnergy.h
+    ${GSRC}/include/EGPlanner/energy/compliantEnergy.h
+    ${GSRC}/include/EGPlanner/energy/contactEnergy.h 
+    ${GSRC}/include/EGPlanner/energy/dynamicAutograspEnergy.h 
+    ${GSRC}/include/EGPlanner/energy/guidedAutoGraspEnergy.h 
+    ${GSRC}/include/EGPlanner/energy/guidedPotentialQualityEnergy.h 
+    ${GSRC}/include/EGPlanner/energy/potentialQualityEnergy.h
+    ${GSRC}/include/EGPlanner/energy/strictAutoGraspEnergy.h
+    ${GSRC}/include/EGPlanner/energy/searchEnergy.h 
+)
+
 set (GRASPIT_EGPLANNER_HEADERS
     ${GSRC}/include/EGPlanner/search.h 
     ${GSRC}/include/EGPlanner/simAnn.h 
     ${GSRC}/include/EGPlanner/searchState.h 
     ${GSRC}/include/EGPlanner/searchStateImpl.h 
-    ${GSRC}/include/EGPlanner/energy/searchEnergy.h 
     ${GSRC}/include/EGPlanner/onLinePlanner.h 
     ${GSRC}/include/EGPlanner/egPlanner.h 
     ${GSRC}/include/EGPlanner/simAnnPlanner.h 
@@ -208,15 +221,6 @@ set (GRASPIT_EGPLANNER_HEADERS
     ${GSRC}/include/EGPlanner/graspTesterThread.h 
     ${GSRC}/include/EGPlanner/onLineGraspInterface.h 
     ${GSRC}/include/EGPlanner/listPlanner.h 
-    ${GSRC}/include/EGPlanner/energy/autograspQualityEnergy.h 
-    ${GSRC}/include/EGPlanner/energy/closureSearchEnergy.h
-    ${GSRC}/include/EGPlanner/energy/compliantEnergy.h
-    ${GSRC}/include/EGPlanner/energy/contactEnergy.h 
-    ${GSRC}/include/EGPlanner/energy/dynamicAutograspEnergy.h 
-    ${GSRC}/include/EGPlanner/energy/guidedAutoGraspEnergy.h 
-    ${GSRC}/include/EGPlanner/energy/guidedPotentialQualityEnergy.h 
-    ${GSRC}/include/EGPlanner/energy/potentialQualityEnergy.h
-    ${GSRC}/include/EGPlanner/energy/strictAutoGraspEnergy.h 
 )
 
 
@@ -781,7 +785,7 @@ if (catkin_FOUND)
     ## DEPENDS: system dependencies of this project that dependent projects also need
     catkin_package(
         INCLUDE_DIRS ${GRASPIT_BASE_INCLUDES} 
-        # LIBRARIES  
+        LIBRARIES graspit 
         # CATKIN_DEPENDS roscpp
         DEPENDS libsoqt4-dev libqt4-dev libcoin80-dev
     )
@@ -896,6 +900,11 @@ install(FILES
 install(FILES
     ${GRASPIT_EGPLANNER_HEADERS}
     DESTINATION ${INCLUDE_DESTINATION}/EGPlanner
+)
+
+install(FILES
+    ${GRASPIT_EGPLANNER_ENERGY_HEADERS}
+    DESTINATION ${INCLUDE_DESTINATION}/EGPlanner/energy
 )
 
 if (PQP_COLLISION)
