@@ -52,8 +52,11 @@ if (NOT CATKIN_DEVEL_PREFIX)
         "Please install graspit or adjust CMAKE_PREFIX_PATH"
         "e.g. cmake -DCMAKE_PREVIX_PATH=/path-to-graspit/ ...")
     endif (graspit_LINK_DIR)
-
-    include(${SELF_DIR}/graspit-targets.cmake)
+    if (BUILD_SHARED_LIBS)
+        include(${SELF_DIR}/graspit-targets.cmake)
+    else (BUILD_SHARED_LIBS)
+        include(${SELF_DIR}/graspit-static-targets.cmake)
+    endif (BUILD_SHARED_LIBS)
     set (CMAKE_MODULE_PATH ${SELF_DIR})
 else (NOT CATKIN_DEVEL_PREFIX)
     # catkin is going to handle the include directories
