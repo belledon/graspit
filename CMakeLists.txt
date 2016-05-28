@@ -21,11 +21,8 @@ endif(NOT CMAKE_BUILD_TYPE)
 # To enforce compiling *with* catkin
 # even if CATKIN_DEVEL_PREFIX is not defined,
 # compile with the flag -DENFORCE_CATKIN=true
-
-# To enforce compiling with catkin in ANY case,
-# set ENFORCE_CATKIN to true. This is for example
-# required when compiling with jenkins, when
-# it seems that CATKIN_DEVEL_PREFIX is not set.
+# This is for example required when compiling on jenkins,
+# when it seems that CATKIN_DEVEL_PREFIX is not set.
 # So set ENFORCE_CATKIN to true only for the commits
 # to jenkins.
 set (ENFORCE_CATKIN false)
@@ -807,24 +804,9 @@ set (GRASPIT_LIBRARY_SOURCES
     ${MOC_OUTFILES}
 )
 
-add_library(graspit SHARED ${GRASPIT_LIBRARY_SOURCES})
-
-## ---
-## comment for future reference: This is required to build a static library
-# add_library(graspit_static STATIC ${GRASPIT_LIBRARY_SOURCES})
-# if ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
-#     target_compile_options(graspit_static PRIVATE -fPIC)  # does not work for bloom-release on saucy. Could 
-# else ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
-#     set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC)
-# endif ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
-## ---
-
-## Make simulator executable
 
 # sources for executable graspit_simulator
 set(SIMULATOR_SRC ${GSRC}/src/main.cpp)
-
-add_executable(graspit_simulator ${SIMULATOR_SRC})
 
 ## System libraries which are needed for graspit
 set(GRASPIT_LINK_LIBRARIES
@@ -836,22 +818,30 @@ set(GRASPIT_LINK_LIBRARIES
    ${BULLET_LIBRARIES}
 )
 
-## ---
-## comment for future reference: This is required to build a static library
-# The graspit_simulator executable can still not be linked
-# with a static library, the problem being the QPixmap resources
-# (see also: https://wiki.qt.io/QtResources)
-# With a static library they can't be found, and Q_INIT_RESOURCE can only be done
-# with a .qrt file (which I tried to use but QT4_ADD_RESOURCES doesn't work).
-# So for now, compile all sources into the graspit_simulator directly.
-# set(SIMULATOR_SRC ${GRASPIT_LIBRARY_SOURCES} ${SIMULATOR_SRC})
-# target_link_libraries(graspit_static ${GRASPIT_LINK_LIBRARIES})
-# target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES})
-## ---
-
-## Link the shared library and the executable
-target_link_libraries(graspit ${GRASPIT_LINK_LIBRARIES})
-target_link_libraries(graspit_simulator graspit ${GRASPIT_LINK_LIBRARIES})
+## Make and link libraray and simulator executable
+if (BUILD_SHARED_LIBS)
+    add_library(graspit SHARED ${GRASPIT_LIBRARY_SOURCES})
+    add_executable(graspit_simulator ${SIMULATOR_SRC})
+    target_link_libraries(graspit ${GRASPIT_LINK_LIBRARIES})
+    target_link_libraries(graspit_simulator graspit ${GRASPIT_LINK_LIBRARIES})
+else (BUILD_SHARED_LIBS)
+    add_library(graspit STATIC ${GRASPIT_LIBRARY_SOURCES})
+    if (NOT (CMAKE_VERSION VERSION_LESS 2.8.12))
+        target_compile_options(graspit PRIVATE -fPIC)
+    else (NOT (CMAKE_VERSION VERSION_LESS 2.8.12))
+        set_target_properties(graspit PROPERTIES COMPILE_FLAGS -fPIC)
+    endif (NOT (CMAKE_VERSION VERSION_LESS 2.8.12))
+    # The graspit_simulator executable can still not be linked
+    # with a static library, the problem being the QPixmap resources
+    # (see also: https://wiki.qt.io/QtResources)
+    # With a static library they can't be found, and Q_INIT_RESOURCE can only be done
+    # with a .qrt file (which I tried to use but QT4_ADD_RESOURCES doesn't work).
+    # So for now, compile all sources into the graspit_simulator directly.
+    set(SIMULATOR_SRC ${GRASPIT_LIBRARY_SOURCES} ${SIMULATOR_SRC})
+    add_executable(graspit_simulator ${SIMULATOR_SRC})
+    target_link_libraries(graspit ${GRASPIT_LINK_LIBRARIES})
+    target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES})
+endif (BUILD_SHARED_LIBS)
 
 ## Set install destination paths
 if (catkin_FOUND) 
@@ -958,24 +948,23 @@ endif (PLY)
 ## Install ##
 #############
 
-install(TARGETS
-    graspit 
-    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
-    EXPORT graspit-targets
-    DESTINATION ${LIB_DESTINATION})
+if (BUILD_SHARED_LIBS)
+    install(TARGETS
+        graspit 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+        EXPORT graspit-targets
+        DESTINATION ${LIB_DESTINATION})
 
-install(EXPORT graspit-targets
-    DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME})
-
-## ---
-## comment for future reference: This is required to build a static library
-# install(TARGETS
-#     graspit_static 
-#     EXPORT graspit-static-targets
-#     DESTINATION ${LIB_DESTINATION})
-# install(EXPORT graspit-static-targets
-#     DESTINATION ${LIB_DESTINATION})
-## ---
+    install(EXPORT graspit-targets
+        DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME})
+else(BUILD_SHARED_LIBS)
+    install(TARGETS
+        graspit 
+        EXPORT graspit-static-targets
+        DESTINATION ${LIB_DESTINATION})
+    install(EXPORT graspit-static-targets
+        DESTINATION ${LIB_DESTINATION})
+endif (BUILD_SHARED_LIBS)
 
 install(FILES
     cmake/${GRASPIT_CONFIG_CMAKE}
@@ -984,7 +973,6 @@ install(FILES
     CMakeMacros/FindQhull.cmake
     DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME}
 )
-
 
 
 #############
