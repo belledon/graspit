@@ -69,7 +69,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	    -DGRASPIT_EXPORTS)
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-
 set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeMacros/")
 
 find_package(Qhull REQUIRED)
@@ -753,18 +752,48 @@ set (GRASPIT_BASE_INCLUDES
 )
 
 
+#############################################
+# Set compiler, include and library variables
+#############################################
+
 set (GRASPIT_INCLUDES 
      ${GRASPIT_BASE_INCLUDES}
      ${GRASPIT_UI_INCLUDE_PATH}
 )
 
-
-## Specify additional locations of header files
 include_directories(
     ${GRASPIT_INCLUDES}
     ${TINYXML_INCLUDES}
 )
 
+set(GRASPIT_DEFINES ${GRASPIT_DEFINES} ${SOQT_CXXFLAGS} ${LAPACK_LINKER_FLAGS})
+add_definitions(${GRASPIT_DEFINES} -g)
+
+set(GRASPIT_LINK_DIRS ${SOQT_LINK_DIRS} ${QT_LIBRARY_DIR})
+link_directories(${GRASPIT_LINK_DIRS})
+
+## System libraries which are needed for graspit
+set(GRASPIT_LINK_LIBRARIES
+   ${QT_LIBRARIES}
+   ${QT_QT3SUPPORT_LIBRARY}
+   ${QHULL_LIBRARIES}
+   ${SOQT_LIBRARY}
+   ${LAPACK_LIBRARIES}
+   ${BULLET_LIBRARIES}
+)
+
+
+
+#######################################################
+# Setting graspit variables for parent scope, so that
+# graspit can be used with add_subdirectory() (eg as
+# external project)
+#######################################################
+set(graspit_INCLUDE_DIRS
+    ${GRASPIT_INCLUDES}) 
+set(graspit_CXXFLAGS ${GRASPIT_DEFINES})
+set(graspit_LINK_DIRS ${GRASPIT_LINK_DIRS})
+set(graspit_LIBRARIES graspit ${GRASPIT_LINK_LIBRARIES})
 
 
 ############################
@@ -788,8 +817,6 @@ if (catkin_FOUND)
     )
 endif (catkin_FOUND)
 
-add_definitions(${GRASPIT_DEFINES} ${SOQT_CXXFLAGS} ${LAPACK_LINKER_FLAGS} -g)
-link_directories(${SOQT_LINK_DIRS} ${QT_LIBRARY_DIR})
 
 set (GRASPIT_LIBRARY_SOURCES
     ${GRASPIT_CORE_SOURCES}
@@ -807,16 +834,6 @@ set (GRASPIT_LIBRARY_SOURCES
 
 # sources for executable graspit_simulator
 set(SIMULATOR_SRC ${GSRC}/src/main.cpp)
-
-## System libraries which are needed for graspit
-set(GRASPIT_LINK_LIBRARIES
-   ${QT_LIBRARIES}
-   ${QT_QT3SUPPORT_LIBRARY}
-   ${QHULL_LIBRARIES}
-   ${SOQT_LIBRARY}
-   ${LAPACK_LIBRARIES}
-   ${BULLET_LIBRARIES}
-)
 
 ## Make and link libraray and simulator executable
 if (BUILD_SHARED_LIBS)

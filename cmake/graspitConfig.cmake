@@ -6,11 +6,10 @@
 # graspit_LIBRARY_DEBUG - the debug version
 # graspit_LIBRARY - a default library, with priority debug.
 # graspit_LIBRARIES - all libraries required
+message(STATUS "Looking for graspit...")
 
-
-message(STATUS "Looking for graspit includes...")
-
-# When using catkin, the include dirs are determined by catkin itself
+# When using catkin, the include dirs are determined by catkin itself.
+# Otherwise, we have to build them.
 if (NOT CATKIN_DEVEL_PREFIX)
     get_filename_component(SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
     # message("$$$$$$$ ${CMAKE_CURRENT_LIST_FILE} SELF_DIR = ${SELF_DIR}")
