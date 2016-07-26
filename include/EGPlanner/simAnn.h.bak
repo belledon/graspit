@@ -41,7 +41,7 @@ class SoSensor;
 /*!	This class performs simulated annealing on a collection of variables 
 	(a GraspPlanningState*). It has no idea of grasps, hands, etc. The cooling 
 	schedule is inspired from L. Ingber, "Very Fast Simulated Re-Annealing", 
-	J. Mathl. Comput. Modelling, vol. 12, no. 8, pp. 967–973, December 1989.
+	J. Mathl. Comput. Modelling, vol. 12, no. 8, pp. 967â€“973, December 1989.
 */
 class SimAnn : public QObject
 {
