@@ -10,6 +10,45 @@ if(NOT CMAKE_BUILD_TYPE)
      FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
+
+###################################################
+## Define cmake variables to build with/without catkin 
+###################################################
+
+# By default, compiling with catkin is
+# enabled. It will only be disabled again
+# if CATKIN_DEVEL_PREFIX is not set.
+# To enforce compiling *with* catkin
+# even if CATKIN_DEVEL_PREFIX is not defined,
+# compile with the flag -DENFORCE_CATKIN=true
+# This is for example required when compiling on jenkins,
+# when it seems that CATKIN_DEVEL_PREFIX is not set.
+# So set ENFORCE_CATKIN to true only for the commits
+# to jenkins.
+set (ENFORCE_CATKIN false)
+   
+# Private flag: compiling with catkin is prioritized by default.
+# This flag will be set to false if CATKIN_DEVEL_PREFIX
+# is empty/not defined, **and** ENFORCE_CATKIN is false.
+set (COMPILE_WITH_CATKIN true)
+
+if (ENFORCE_CATKIN)
+    message(STATUS "Enforcing compilation with catkin")
+endif (ENFORCE_CATKIN)
+
+if (NOT ENFORCE_CATKIN AND NOT CATKIN_DEVEL_PREFIX)
+    message(STATUS "Compiling graspit: CATKIN_DEVEL_PREFIX is not defined, so **enforcing compilation with cmake**.")
+    set (COMPILE_WITH_CATKIN false)
+endif (NOT ENFORCE_CATKIN AND NOT CATKIN_DEVEL_PREFIX)
+
+if (COMPILE_WITH_CATKIN)
+    find_package(catkin REQUIRED)
+endif (COMPILE_WITH_CATKIN)
+   
+# Configuration file for graspit
+set (GRASPIT_CONFIG_CMAKE graspitConfig.cmake)
+
+
 ####################################
 ## Define graspit variables ####### 
 ####################################
@@ -43,18 +82,22 @@ find_package(SoQt4 REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
+# All depending cmake projects to be added with catkin_package() as DEPENDS
+set(CMAKE_DEPEND_PROJECTS Qhull SoQt4 LAPACK)
 
 if (DYNAMICS_ENGINE STREQUAL BULLET_DYNAMICS)
 
 	set(BULLET_ROOT $ENV{BULLET_ROOT})
 	message(USING BULLET_ROOT=${BULLET_ROOT} from env variable BULLET_ROOT.)
 	find_package(BULLET)
+    set(CMAKE_DEPEND_PROJECTS ${CMAKE_DEPEND_PROJECTS} BULLET)
 
 endif(DYNAMICS_ENGINE STREQUAL BULLET_DYNAMICS)
 
 
 SET( QT_USE_QT3SUPPORT TRUE )
 find_package(Qt4 COMPONENTS QtCore QtSql REQUIRED)
+set(CMAKE_DEPEND_PROJECTS ${CMAKE_DEPEND_PROJECTS} Qt4)
 
 include (${QT_USE_FILE})
 
@@ -72,13 +115,6 @@ set (GRASPIT_INCLUDES
     ${GSRC}/include/Planner
     ${GSRC}/include/Collision
     ${GSRC}/cmdline
-    ${GSRC}/ui
-    # following needs to be included because basic
-    # files wouldn't compile without main window
-    ${GSRC}/ui/Planner
-    ${GSRC}/ui/EGPlanner
-    ${GSRC}/ui/optimizer
-    ${GSRC}/include/optimizer
 )
 
 
@@ -102,11 +138,6 @@ set (GRASPIT_INCLUDEDIR_HEADERS
     ${GSRC}/include/body.h 
     ${GSRC}/include/bBox.h 
     ${GSRC}/include/bbox_inl.h 
-    ${GSRC}/include/contact/contact.h 
-    ${GSRC}/include/contact/softContact.h 
-    ${GSRC}/include/contact/pointContact.h 
-    ${GSRC}/include/contact/virtualContact.h 
-    ${GSRC}/include/contact/virtualContactOnObject.h
     ${GSRC}/include/contactSetting.h 
     ${GSRC}/include/debug.h 
     ${GSRC}/include/dof.h 
@@ -149,6 +180,16 @@ set (GRASPIT_INCLUDEDIR_HEADERS
     ${GSRC}/include/arch.h
     ${GSRC}/include/FitParabola.h 
 )
+
+
+set (GRASPIT_CONTACT_HEADERS
+    ${GSRC}/include/contact/contact.h 
+    ${GSRC}/include/contact/softContact.h 
+    ${GSRC}/include/contact/pointContact.h 
+    ${GSRC}/include/contact/virtualContact.h 
+    ${GSRC}/include/contact/virtualContactOnObject.h
+)
+
 set (GRASPIT_PLANNER_HEADERS
     ${GSRC}/include/Planner/grasp_visualization.h 
     ${GSRC}/include/Planner/grasp_tester.h 
@@ -493,13 +534,16 @@ endif(DYNAMICS_ENGINE STREQUAL BULLET_DYNAMICS)
 
 set (GRASPIT_UI_INCLUDES
     ${GSRC}/ui 
-    ${GSRC}/ui/Planner 
+    # following needs to be included because basic
+    # files wouldn't compile without main window
+    ${GSRC}/ui/Planner
     ${GSRC}/ui/EGPlanner
+    ${GSRC}/ui/optimizer
+    ${GSRC}/include/optimizer
 )
 
 set (GRASPIT_INCLUDES
     ${GRASPIT_INCLUDES}
-    ${GRASPIT_UI_INCLUDES}
     ${GRASPIT_CGDB_INCLUDES}
     ${GRASPIT_PLY_INCLUDES}
     ${BULLET_INCLUDE_DIR}
@@ -712,10 +756,9 @@ set (CMAKE_CURRENT_BINARY_DIR ${OLD_CMAKE_CURRENT_BINARY_DIR}) # restore current
 QT4_WRAP_CPP(MOC_OUTFILES ${MOC_HEADERS})
 
 
-# add Qt stuff to the includes
-set (GRASPIT_INCLUDES 
-     ${GRASPIT_INCLUDES}
-     ${GRASPIT_UI_INCLUDE_PATH}
+# All include directories which graspit depends on,
+# **excluding** graspit directories itelf.
+set (GRASPIT_SYS_INCLUDES
      ${SOQT_INCLUDE_DIRS}
      ${QT_INCLUDES}
      ${QT_INCLUDE_DIR}
@@ -723,6 +766,22 @@ set (GRASPIT_INCLUDES
      ${QHULL_INCLUDE_DIRS}
 )
 
+# All graspit includes **except** the ones which
+# should never be exported as dependencies,
+# such as UI-related files. This is required
+# for catkin_package() command.
+set (GRASPIT_BASE_INCLUDES 
+    ${GRASPIT_SYS_INCLUDES}
+    ${GRASPIT_INCLUDES}
+) 
+
+# add Qt stuff to the includes
+set (GRASPIT_INCLUDES 
+     ${GRASPIT_INCLUDES}
+     ${GRASPIT_SYS_INCLUDES}
+     ${GRASPIT_UI_INCLUDES}
+     ${GRASPIT_UI_INCLUDE_PATH}
+)
 
 ## Specify additional locations of header files
 include_directories(
@@ -735,8 +794,11 @@ include_directories(
 ## Build  ## 
 ############
 
-add_definitions(${GRASPIT_DEFINES} ${SOQT_CXXFLAGS} ${LAPACK_LINKER_FLAGS} -g)
-link_directories(${SOQT_LINK_DIRS} ${QT_LIBRARY_DIR})
+set(GRASPIT_DEFINES ${GRASPIT_DEFINES} ${SOQT_CXXFLAGS} ${LAPACK_LINKER_FLAGS} -g)
+add_definitions(${GRASPIT_DEFINES})
+
+set(GRASPIT_LINK_DIRS ${SOQT_LINK_DIRS} ${QT_LIBRARY_DIR})  # this is required again in catkin_package()
+link_directories(${GRASPIT_LINK_DIRS})
 
 set (GRASPIT_LIBRARY_SOURCES
     ${GRASPIT_CORE_SOURCES}
@@ -751,24 +813,8 @@ set (GRASPIT_LIBRARY_SOURCES
     ${MOC_OUTFILES}
 )
 
-add_library(graspit SHARED ${GRASPIT_LIBRARY_SOURCES})
-
-## ---
-## comment for future reference: This is required to build a static library
-# add_library(graspit_static STATIC ${GRASPIT_LIBRARY_SOURCES})
-# if ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
-#     target_compile_options(graspit_static PRIVATE -fPIC)  # does not work for bloom-release on saucy. Could 
-# else ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
-#     set_target_properties(graspit_static PROPERTIES COMPILE_FLAGS -fPIC)
-# endif ((CMAKE_VERSION VERSION_GREATER 2.8.12) OR (CMAKE_VERSION VERSION_EQUAL 2.8.12))
-## ---
-
-## Make simulator executable
-
 # sources for executable graspit_simulator
 set(SIMULATOR_SRC ${GSRC}/src/main.cpp)
-
-add_executable(graspit_simulator ${SIMULATOR_SRC})
 
 ## System libraries which are needed for graspit
 set(GRASPIT_LINK_LIBRARIES
@@ -780,37 +826,126 @@ set(GRASPIT_LINK_LIBRARIES
    ${BULLET_LIBRARIES}
 )
 
-## ---
-## comment for future reference: This is required to build a static library
-# The graspit_simulator executable can still not be linked
-# with a static library, the problem being the QPixmap resources
-# (see also: https://wiki.qt.io/QtResources)
-# With a static library they can't be found, and Q_INIT_RESOURCE can only be done
-# with a .qrt file (which I tried to use but QT4_ADD_RESOURCES doesn't work).
-# So for now, compile all sources into the graspit_simulator directly.
-# set(SIMULATOR_SRC ${GRASPIT_LIBRARY_SOURCES} ${SIMULATOR_SRC})
-# target_link_libraries(graspit_static ${GRASPIT_LINK_LIBRARIES})
-# target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES})
-## ---
+## Make and link libraray and simulator executable
+if (BUILD_SHARED_LIBS)
+    add_library(graspit SHARED ${GRASPIT_LIBRARY_SOURCES})
+    add_executable(graspit_simulator ${SIMULATOR_SRC})
+    target_link_libraries(graspit ${GRASPIT_LINK_LIBRARIES})
+    target_link_libraries(graspit_simulator graspit ${GRASPIT_LINK_LIBRARIES})
+else (BUILD_SHARED_LIBS)
+    add_library(graspit STATIC ${GRASPIT_LIBRARY_SOURCES})
+    if (NOT (CMAKE_VERSION VERSION_LESS 2.8.12))
+        target_compile_options(graspit PRIVATE -fPIC)
+    else (NOT (CMAKE_VERSION VERSION_LESS 2.8.12))
+        set_target_properties(graspit PROPERTIES COMPILE_FLAGS -fPIC)
+    endif (NOT (CMAKE_VERSION VERSION_LESS 2.8.12))
+    # The graspit_simulator executable can still not be linked
+    # with a static library, the problem being the QPixmap resources
+    # (see also: https://wiki.qt.io/QtResources)
+    # With a static library they can't be found, and Q_INIT_RESOURCE can only be done
+    # with a .qrt file (which I tried to use but QT4_ADD_RESOURCES doesn't work).
+    # So for now, compile all sources into the graspit_simulator directly.
+    set(SIMULATOR_SRC ${GRASPIT_LIBRARY_SOURCES} ${SIMULATOR_SRC})
+    add_executable(graspit_simulator ${SIMULATOR_SRC})
+    target_link_libraries(graspit ${GRASPIT_LINK_LIBRARIES})
+    target_link_libraries(graspit_simulator ${GRASPIT_LINK_LIBRARIES})
+endif (BUILD_SHARED_LIBS)
 
-## Link the shared library and the executable
-target_link_libraries(graspit ${GRASPIT_LINK_LIBRARIES})
-target_link_libraries(graspit_simulator graspit ${GRASPIT_LINK_LIBRARIES})
+
+
+#######################################################
+# Setting graspit variables for parent scope, so that
+# graspit can be used with add_subdirectory() (eg as
+# external project)
+#######################################################
+set(graspit_INCLUDE_DIRS ${GRASPIT_INCLUDES}) 
+# include directories for dependencies (without graspit)
+set(graspit_SYS_INCLUDES ${GRASPIT_SYS_INCLUDES})
+set(graspit_SYS_LIBRARIES ${GRASPIT_LINK_LIBRARIES})
+set(graspit_CXXFLAGS ${GRASPIT_DEFINES})
+set(graspit_LINK_DIRS ${GRASPIT_LINK_DIRS})
+set(graspit_LIBRARIES graspit ${GRASPIT_LINK_LIBRARIES})
+
+############################
+## Catkin specifications  ## 
+############################
+if (COMPILE_WITH_CATKIN)
+    #message("Base includes: ${GRASPIT_BASE_INCLUDES}")
+    ###################################
+    ## catkin specific configuration ##
+    ###################################
+    ## The catkin_package macro generates cmake config files for your package
+    ## Declare things to be passed to dependent projects
+    ## INCLUDE_DIRS: uncomment this if you package contains header files
+    ## LIBRARIES: libraries you create in this project that dependent projects also need
+    ## CATKIN_DEPENDS: catkin_packages dependent projects also need
+    ## DEPENDS: system dependencies of this project that dependent projects also need
+    catkin_package(
+        INCLUDE_DIRS ${GRASPIT_BASE_INCLUDES} 
+        LIBRARIES graspit ${GRASPIT_LINK_LIBRARIES} # need to add GRASPIT_LINK_LIBRARIES for bloom binary builds
+        # CATKIN_DEPENDS roscpp
+        DEPENDS  ${CMAKE_DEPEND_PROJECTS}
+    )
+endif (COMPILE_WITH_CATKIN)
+
+#############
+# Install
+#############
 
 ## Set install destination paths
-set ( INCLUDE_DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/)
-set ( LIB_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/)
-set ( BIN_DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-set ( SHARE_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/)
+if (COMPILE_WITH_CATKIN) 
+    # all install targets should use catkin DESTINATION variables
+    # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
+    set ( INCLUDE_DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+    set ( LIB_DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+    set ( BIN_DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+    set ( SHARE_DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+else (COMPILE_WITH_CATKIN) 
+    set ( INCLUDE_DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/)
+    set ( LIB_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/)
+    set ( BIN_DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    set ( SHARE_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/)
+endif (COMPILE_WITH_CATKIN) 
 
-set(INSTALL_BINS graspit_simulator graspit)
 
-## Mark executables and/or libraries for installation
-install(TARGETS ${INSTALL_BINS} 
+# Install graspit simulator
+install(TARGETS graspit_simulator 
    ARCHIVE DESTINATION ${LIB_DESTINATION}
    LIBRARY DESTINATION ${LIB_DESTINATION}
    RUNTIME DESTINATION ${BIN_DESTINATION}
 )
+
+# Install library (shared or static)
+if (BUILD_SHARED_LIBS)
+    install(TARGETS
+        graspit 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+        EXPORT graspit-targets
+        DESTINATION ${LIB_DESTINATION})
+
+    install(EXPORT graspit-targets
+        DESTINATION ${LIB_DESTINATION})
+else(BUILD_SHARED_LIBS)
+    install(TARGETS
+        graspit 
+        EXPORT graspit-static-targets
+        DESTINATION ${LIB_DESTINATION})
+    install(EXPORT graspit-static-targets
+        DESTINATION ${LIB_DESTINATION})
+endif (BUILD_SHARED_LIBS)
+
+
+# Install cmake files
+install(FILES
+    cmake/${GRASPIT_CONFIG_CMAKE}
+    CMakeMacros/FindBULLET.cmake
+    CMakeMacros/FindSoQt4.cmake
+    CMakeMacros/FindQhull.cmake
+    DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME}
+)
+
+
+# Install headers
 
 install(FILES
     ${GRASPIT_INCLUDEDIR_HEADERS}
@@ -832,6 +967,12 @@ install(FILES
     DESTINATION ${INCLUDE_DESTINATION}/Planner
 )
 
+
+install(FILES
+    ${GRASPIT_CONTACT_HEADERS}
+    DESTINATION ${INCLUDE_DESTINATION}/contact
+)
+
 install(FILES
     ${GRASPIT_EGPLANNER_HEADERS}
     DESTINATION ${INCLUDE_DESTINATION}/EGPlanner
@@ -841,8 +982,6 @@ install(FILES
     ${GRASPIT_EGPLANNER_ENERGY_HEADERS}
     DESTINATION ${INCLUDE_DESTINATION}/EGPlanner/energy
 )
-
-
 
 if (PQP_COLLISION)
     install(FILES
@@ -891,40 +1030,6 @@ if (PLY)
     )
 endif (PLY)
 
-#############
-## Install ##
-#############
-
-install(TARGETS
-    graspit 
-    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
-    EXPORT graspit-targets
-    DESTINATION ${LIB_DESTINATION})
-
-install(EXPORT graspit-targets
-    DESTINATION ${LIB_DESTINATION})
-
-# For future reference: install graspitConfig.cmake as well as soon
-# as it is added to the repository.
-# set (GRASPIT_CONFIG_CMAKE graspitConfig.cmake)
-install(FILES
-    # cmake/${GRASPIT_CONFIG_CMAKE}
-    CMakeMacros/FindBULLET.cmake
-    CMakeMacros/FindSoQt4.cmake
-    CMakeMacros/FindQhull.cmake
-    DESTINATION ${LIB_DESTINATION}/${PROJECT_NAME}
-)
-
-## ---
-## comment for future reference: This is required to build a static library
-# install(TARGETS
-#     graspit_static 
-#     EXPORT graspit-static-targets
-#     DESTINATION ${LIB_DESTINATION})
-# install(EXPORT graspit-static-targets
-#     DESTINATION ${LIB_DESTINATION})
-## ---
-
 
 #############
 ## Testing ##
@@ -935,6 +1040,7 @@ if(BUILD_TESTS)
 enable_testing()
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
+set(CMAKE_DEPEND_PROJECTS ${CMAKE_DEPEND_PROJECTS} GTest)
 
 # Make test executable
 add_executable(graspit_simple_test
