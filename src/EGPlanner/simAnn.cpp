@@ -77,41 +77,68 @@ SimAnn::writeResults(bool w)
 
 void SimAnn::useParameters(
 		AnnealingType type, 
-		std::vector<float> *p)
+		std::vector<float> p)
 {
-	AnnealingParameters.type = type;
-	AnnealingParameters.YC = p->at(0); //yc
-	AnnealingParameters.HC = p->at(1); //hc
-	AnnealingParameters.YDIMS = p->at(2); //ydims
-	AnnealingParameters.HDIMS = p->at(3); //hdims
-	AnnealingParameters.NBR_ADJ = p->at(4); //nbr_adj
-	AnnealingParameters.ERR_ADJ = p->at(5); //err_adj
-	AnnealingParameters.DEF_T0 = p->at(6); //def_t0
-	AnnealingParameters.DEF_K0 = p->at(7); //def_k0;
+
+	switch (type)
+	{
+		case ANNEAL_DEFAULT:
+		{
+			DBGA("Setting default parameters");
+			setParameters(ANNEAL_DEFAULT);
+			TYPE = type;
+			DBGA("Finished setting default parameters")
+			break;
+		}
+		case ANNEAL_CUSTOM:
+		{
+			DBGA("Setting custom parameters");
+			TYPE = type;
+			YC = p.at(0); //yc
+			HC = p.at(1); //hc
+			YDIMS = p.at(2); //ydims
+			HDIMS = p.at(3); //hdims
+			NBR_ADJ = p.at(4); //nbr_adj
+			ERR_ADJ = p.at(5); //err_adj
+			DEF_T0 = p.at(6); //def_t0
+			DEF_K0 = p.at(7); //def_k0;
+			DBGA("Finished setting custom parameters")
+			break;
+		}
+		default:
+			fprintf(stderr,"Unknown Annealing params requested, using default!\n");
+			TYPE = ANNEAL_DEFAULT;
+			break;
+	}
+
+	
 
 }
 
 void SimAnn::getParameters()
 {
-	switch(AnnealingParameters.type) {
-		case ANNEAL_CUSTOM:
-			YC = AnnealingParameters.YC;
-			HC = AnnealingParameters.HC;
-			YDIMS = AnnealingParameters.YDIMS;
-			HDIMS = AnnealingParameters.HDIMS;
-			NBR_ADJ = AnnealingParameters.NBR_ADJ;
-			ERR_ADJ = AnnealingParameters.ERR_ADJ;
-			DEF_T0 = AnnealingParameters.DEF_T0;
-			DEF_K0 = AnnealingParameters.DEF_K0;
-			break;
-		case ANNEAL_DEFAULT:
-			setParameters(ANNEAL_DEFAULT);
-			break;
-		default:
-			fprintf(stderr,"Unknown Annealing params requested, using default!\n");
-			setParameters(ANNEAL_DEFAULT);
-			break;
-	}
+	// switch(AnnealingParameters.type) {
+	// 	case ANNEAL_CUSTOM:
+	// 		DBGA("Using custom parameters")
+	// 		YC = AnnealingParameters.YC;
+	// 		HC = AnnealingParameters.HC;
+	// 		YDIMS = AnnealingParameters.YDIMS;
+	// 		HDIMS = AnnealingParameters.HDIMS;
+	// 		NBR_ADJ = AnnealingParameters.NBR_ADJ;
+	// 		ERR_ADJ = AnnealingParameters.ERR_ADJ;
+	// 		DEF_T0 = AnnealingParameters.DEF_T0;
+	// 		DEF_K0 = AnnealingParameters.DEF_K0;
+	// 		break;
+	// 	case ANNEAL_DEFAULT:
+			
+	// 		DBGA("Using default parameters");
+	// 		setParameters(ANNEAL_DEFAULT);
+	// 		break;
+	// 	default:
+	// 		fprintf(stderr,"Unknown Annealing params requested, using default!\n");
+	// 		setParameters(ANNEAL_DEFAULT);
+	// 		break;
+	// }
 }
 void SimAnn::setParameters(AnnealingType type)
 {

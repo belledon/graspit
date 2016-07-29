@@ -60,13 +60,14 @@ SimAnnPlanner::setAnnealingParameters(AnnealingType y) {
 	mSimAnn->setParameters(y);
 }
 
-void SimAnnPlanner::useAnnealingParameters(AnnealingType y, std::vector<float> *p) {
+void SimAnnPlanner::useAnnealingParameters(AnnealingType y, std::vector<float> p) {
 	if (isActive()) {
 		DBGA("Stop planner before setting ann parameters");
 		return;
 	}
+	DBGA("Setting SimAnn parameters")
 	mSimAnn->useParameters(y, p);
-	mSimAnn->getParameters();
+	
 }
 void
 SimAnnPlanner::resetParameters()
