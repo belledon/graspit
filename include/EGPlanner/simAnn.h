@@ -58,7 +58,7 @@ public:
 	enum Result{FAIL = 0, JUMP = 1, KEEP =2};
 private:
 
-	AnnealingParams AnnealingParameters;
+	AnnealingType TYPE;
 	//Annealing parameters
 	//! Annealing constant for neighbor generation schedule
 	double YC; 
@@ -114,7 +114,7 @@ public:
 
 	void useParameters(
 		AnnealingType type, 
-		std::vector<float> *p);
+		std::vector<float> p);
 
 	void getParameters();
 };
