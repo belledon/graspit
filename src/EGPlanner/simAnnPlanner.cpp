@@ -111,6 +111,14 @@ SimAnnPlanner::setModelState(const GraspPlanningState *modelState)
 	invalidateReset();
 }
 
+void SimAnnPlanner::configAnnealingParameters(std::map<std::string, double>& params)
+{
+	if (isActive()) {
+		DBGA("Stop planner before setting ann parameters");
+		return;
+	}
+	mSimAnn->configParams(params);
+}
 void
 SimAnnPlanner::mainLoop()
 {

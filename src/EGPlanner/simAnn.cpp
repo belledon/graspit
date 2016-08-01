@@ -140,6 +140,18 @@ void SimAnn::getParameters()
 	// 		break;
 	// }
 }
+
+void SimAnn::configParams(std::map<std::string, double>& params)
+{
+	YC = params["YC"];
+	HC = params["HC"];
+	YDIMS = params["YDIMS"];
+	HDIMS = params["HDIMS"];
+	NBR_ADJ = params["NBR_ADJ"];
+	ERR_ADJ = params["ERR_ADJ"];
+	DEF_T0 = params["DEF_T0"];
+	DEF_K0 = params["DEF_K0"];
+}
 void SimAnn::setParameters(AnnealingType type)
 {
 	switch (type) {
