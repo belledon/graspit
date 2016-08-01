@@ -116,5 +116,7 @@ public:
 		AnnealingType type, 
 		std::vector<float> p);
 
+	void configParams(std::map<std::string, double>& params);
+
 	void getParameters();
 };
