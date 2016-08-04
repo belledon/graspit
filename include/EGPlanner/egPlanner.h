@@ -30,12 +30,14 @@
 #include <list>
 #include <ostream>
 #include <time.h>
+#include <map>
 
 #include <QThread>
 #include <QMutex>
 #include <QObject>
 
 #include "EGPlanner/search.h"
+#include "EGPlanner/PlanningParams.h"
 
 class Hand;
 class Body;
@@ -234,5 +236,8 @@ public:
 
 	//! Set the stream for outputting stats and info
 	void setStatStream(std::ostream *out) const;
+	//! Legacy implementation, allows passage of parameters intended for SimAnnPlanner
+	virtual void configPlanner(std::map<std::string, double>& params);
+	virtual void configPlanner(PlanningParams * params);
 };
 #endif

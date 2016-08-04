@@ -28,10 +28,13 @@
 
 #include <vector>
 #include <list>
+#include <map>
 
 #include "QObject"
 #include "EGPlanner/search.h"
 #include "EGPlanner/egPlanner.h"
+#include "EGPlanner/SimAnnParams.h"
+
 
 class Hand;
 class Body;
@@ -62,7 +65,8 @@ public:
 	virtual PlannerType getType(){return PLANNER_SIM_ANN;}
 	void setAnnealingParameters(AnnealingType y);
 	void useAnnealingParameters(AnnealingType y, std::vector<float> p);
-	void configAnnealingParameters(std::map<std::string, double>& params);
+	void configPlanner(std::map<std::string, double>& params);
+	void configPlanner(SimAnnParams *params);
 	//! Checks if a model state has been set
 	virtual bool initialized();
 	//! Has to be called BEFORE any planning can begin. 

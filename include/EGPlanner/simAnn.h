@@ -37,6 +37,7 @@ class SoSensor;
 #include <stdio.h>
 #include "matvec3D.h"
 #include <vector>
+#include <map>
 
 /*!	This class performs simulated annealing on a collection of variables 
 	(a GraspPlanningState*). It has no idea of grasps, hands, etc. The cooling 
