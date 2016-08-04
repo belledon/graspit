@@ -143,6 +143,7 @@ void SimAnn::getParameters()
 
 void SimAnn::configParams(std::map<std::string, double>& params)
 {
+	TYPE = ANNEAL_CUSTOM;
 	YC = params["YC"];
 	HC = params["HC"];
 	YDIMS = params["YDIMS"];
@@ -159,6 +160,7 @@ void SimAnn::setParameters(AnnealingType type)
 			//these are the default parameters that experimentation shows work best over 8 dimensions
 			//identical schedule for error and neighbors
 			//error is supposed to be distance between fingers and object, so raw order of 1-100 mm
+			TYPE = ANNEAL_DEFAULT;
 			YC = 7.0;
 			HC = 7.0;
 			YDIMS = 8;

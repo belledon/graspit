@@ -33,7 +33,7 @@
 #include "robots/robotiq.h"
 #include "robots/pr2Gripper.h"
 #include "body.h"
-#include "EGPlanner/simAnn.h"
+// #include "EGPlanner/simAnn.h"
 #include "world.h"
 #include "gloveInterface.h" //for glove input
 #include "eigenGrasp.h" //for glove input
@@ -577,3 +577,9 @@ EGPlanner::setStatStream(std::ostream *out) const
 	assert(mEnergyCalculator);
 	mEnergyCalculator->setStatStream(out);
 }
+
+void EGPlanner::configPlanner(std::map<std::string, double>& params)
+{}
+
+void EGPlanner::configPlanner(PlanningParams * params)
+{}
