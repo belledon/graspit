@@ -62,7 +62,7 @@ private:
 	int mMaxCandidates;
 	//! The current number of candidates that have been queued for testing
 	int mNumCandidates;
-
+ 
 	//! Retrieves the next candidate in line for testing
 	GraspPlanningState* popCandidate();
 	//! Posts a new solution in the list
@@ -85,7 +85,7 @@ public:
 	//! Also clears internal buffers for candidates and solutions
 	virtual bool resetPlanner();
 
-	//! Add another candidate to the back of list for testing, if there is room
+	//! Add another candidate to the back of list for testing, if there is room	
 	bool postCandidate(GraspPlanningState *s);
 	//! Retrieve the least recently posted solution in the list
 	GraspPlanningState* popSolution();
@@ -94,6 +94,11 @@ public:
 
 	//! Returns the number of candidates currently queued for testing
 	int getNumCandidates(){return mNumCandidates;}
+
+	//! Added for inheritance reasons. Why is this a helper class to onlinePlanner (which inherits SimAnnPlanner
+	//! )since this inherits a more abstract class EgPlanner?
+	virtual void setModelState(const GraspPlanningState *modelState){};
+	
 };
 
 #endif

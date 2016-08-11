@@ -53,25 +53,32 @@ class SimAnnPlanner : public EGPlanner
 protected:
 	//! The instance that is used to do simulated annealing
 	SimAnn *mSimAnn;
-	SimAnnPlanner(){}
+
+	
 	//! Calls a simulated annealing step and buffers the best solutions
 	void mainLoop();
 	//! Also resets the simulated annealer
 	void resetParameters();
+
+
 public:
 	//! Also initializes the simulated annealer
+	SimAnnPlanner();
 	SimAnnPlanner(Hand *h);
 	~SimAnnPlanner();
 	virtual PlannerType getType(){return PLANNER_SIM_ANN;}
 	void setAnnealingParameters(AnnealingType y);
 	void useAnnealingParameters(AnnealingType y, std::vector<float> p);
 	void configPlanner(std::map<std::string, double>& params);
-	void configPlanner(SimAnnParams *params);
+	// void setHand(Hand *h);
 	//! Checks if a model state has been set
 	virtual bool initialized();
 	//! Has to be called BEFORE any planning can begin. 
 	/*! It tells the planner how the state it is searching on looks like (how many variables, etc). */
 	virtual void setModelState(const GraspPlanningState *modelState);
+
+	using EGPlanner::configPlanner;
+	void configPlanner(SimAnnParams *params);
 };
 
 #endif

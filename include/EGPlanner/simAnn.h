@@ -103,6 +103,7 @@ private:
 
 public:
 	SimAnn();
+	SimAnn(std::map<std::string, double>& params);
     virtual ~SimAnn();
 
 	//! The main interface to this class. Performs one annealing step

@@ -1,12 +1,13 @@
 //SimAnnParams.h
 #ifndef _simannparams_h_
 #define _simannparams_h_
-
+ 
 
 #include "EGPlanner/PlanningParams.h"
 
 #include <vector>
 #include <map>
+#include <string> 
 
 class SimAnnParams : public PlanningParams
 {
@@ -27,3 +28,4 @@ public:
 };
 
 #endif
+ 
