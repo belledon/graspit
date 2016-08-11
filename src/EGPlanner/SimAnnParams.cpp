@@ -7,10 +7,14 @@
 SimAnnParams::SimAnnParams(std::map<std::string, double> params):
 	PlanningParams(PLANNER_SIM_ANN),
 	parameters(params)
-{}
+{
+	
+	DBGA("SimAnnParams Constructor");
+}
 
 std::map<std::string, double> SimAnnParams::getPlannerParams()
 {
+	DBGA("returning params")
 	return parameters;
 }
 

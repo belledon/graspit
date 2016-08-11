@@ -48,6 +48,19 @@ SimAnn::SimAnn()
 	mTotalSteps = 0;
 }
 
+SimAnn::SimAnn(std::map<std::string, double>& params)
+{
+	configParams(params);
+	mWriteResults = false;
+	mFile = NULL;
+
+	if (mWriteResults) {
+	} else {
+		mFile = NULL;
+	}
+	mTotalSteps = 0;
+}
+
 
 SimAnn::~SimAnn()
 {

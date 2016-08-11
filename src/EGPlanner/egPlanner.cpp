@@ -94,6 +94,11 @@ EGPlanner::~EGPlanner()
 	if (mIdleSensor) delete mIdleSensor;
 }
 
+void EGPlanner::setHand(Hand * h)
+{
+	mHand = h;
+}
+
 /*! Set the current state of the planner. It will accept any state, as
 	long as the current state is not DONE or EXITED. Once the planner 
 	is DONE it can only go to EXITED when the thread stops spinning. 
@@ -581,5 +586,3 @@ EGPlanner::setStatStream(std::ostream *out) const
 void EGPlanner::configPlanner(std::map<std::string, double>& params)
 {}
 
-void EGPlanner::configPlanner(PlanningParams * params)
-{}
