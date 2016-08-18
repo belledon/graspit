@@ -162,9 +162,35 @@ void SimAnn::configParams(std::map<std::string, double>& params)
 	YDIMS = params["YDIMS"];
 	HDIMS = params["HDIMS"];
 	NBR_ADJ = params["NBR_ADJ"];
-	ERR_ADJ = params["ERR_ADJ"];
+	ERR_ADJ = params["ERR_ADJ"]; 
 	DEF_T0 = params["DEF_T0"];
 	DEF_K0 = params["DEF_K0"];
+}
+
+void SimAnn::listParams()
+{
+	switch(TYPE)
+	{
+		case ANNEAL_DEFAULT:
+		{
+			DBGA("Using default parameters");
+			break;
+		}
+		case ANNEAL_CUSTOM:
+		{
+			char buffer [150];
+			sprintf(buffer, "YC=%f\tHC=%f\tYDIMS=%f\tHDIMS=%f\tNBR_ADJ=%f\tERR_ADJ=%f\tDEF_T0=%f\tDEF_K0=%f\t",
+				YC,HC,YDIMS, HDIMS, NBR_ADJ, ERR_ADJ, DEF_T0, DEF_K0);
+			DBGA(buffer);
+			break;
+		}
+		default:
+		{
+			DBGA("Undefined parameters!")
+			break;
+		}
+	}
+	
 }
 void SimAnn::setParameters(AnnealingType type)
 {

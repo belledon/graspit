@@ -511,6 +511,7 @@ EGPlanner::processInput()
 		//if we are using the glove as input, the mTargetState needs to be 
 		//updated all the time. Since the planner has the callback loop, 
 		//it's the planner who has to do it, not the dialog
+		
 		assert(mHand->getGloveInterface());
 		double *gloveDOF = new double [mHand->getNumDOF()];
 		for (int d=0; d<mHand->getNumDOF(); d++) {
@@ -523,6 +524,7 @@ EGPlanner::processInput()
 		mTargetState->getPosture()->storeHandDOF(gloveDOF);
 		delete [] gloveDOF;		
 	}
+	
 	//for input from the Flock of Birds:
 	//nothing to do here. The way this works, is that the reference hand 
 	//is controlled by the flock of birds. The OnLinePlanner is designed 
@@ -584,5 +586,11 @@ EGPlanner::setStatStream(std::ostream *out) const
 }
 
 void EGPlanner::configPlanner(std::map<std::string, double>& params)
-{}
+{
+	DBGA("EGPlanner::configPlanner should not be called!")
+}
 
+void EGPlanner::printPlanner()
+{
+	DBGA("This is an abstract EGPlanner");
+}

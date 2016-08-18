@@ -101,26 +101,33 @@ SimAnnPlanner::initialized()
 void
 SimAnnPlanner::setModelState(const GraspPlanningState *modelState)
 {
+	DBGA("Setting model state...");
 	if (isActive()) {
 		DBGA("Can not change model state while planner is running");
 		return;
 	}
 
 	if (mCurrentState) delete mCurrentState;
+	DBGA("Setting current state...");
 	mCurrentState = new GraspPlanningState(modelState);
-	mCurrentState->setEnergy(1.0e5);
+	//removed for testing purposes -> mCurrentState->setEnergy(1.0e5);
 	//my hand might be a clone
+	DBGA("Setting to current state to that of the given hand");
 	mCurrentState->changeHand(mHand, true);
+	DBGA("Done setting current state!");
 
 	if (mTargetState && (mTargetState->readPosition()->getType() != mCurrentState->readPosition()->getType() ||
 						 mTargetState->readPosture()->getType() != mCurrentState->readPosture()->getType() ) ) {
+		DBGA("Target state is not of correct type with regards to the current state...setting to null");
 		delete mTargetState; mTargetState = NULL;
     }
 	if (!mTargetState) {
+		DBGA("No target state initialized, copying from current state...");
 		mTargetState = new GraspPlanningState(mCurrentState);
-		mTargetState->reset();
+		//removed for testing purposes -> mTargetState->reset();
 		mInputType = INPUT_NONE;
 	}
+	DBGA("Done setting target state!")
 	invalidateReset();
 }
 
@@ -149,20 +156,33 @@ void SimAnnPlanner::configPlanner(SimAnnParams *params)
 		if(mSimAnn) delete mSimAnn;
 		mSimAnn = new SimAnn(p);
 		DBGA("Configured SimAnnPlanner");
+		mSimAnn->listParams();
 	}
 	else
 	{
 		DBGA("Cannot configure this planner with these parameters");
 	}	
 }
+
+void SimAnnPlanner::printPlanner()
+{
+	DBGA("This is a SimAnnPlanner with the parameters:");
+	mSimAnn->listParams();
+}
 void
 SimAnnPlanner::mainLoop()
 {
+
 	GraspPlanningState *input = NULL;
+	
 	if ( processInput() ) {
+		//DBGA("Target state is set to current state");
 		input = mTargetState;
 	}
-
+	else
+	{
+		//DBGA("Target state is set to null state");
+	}
 	//call sim ann
 	SimAnn::Result result = mSimAnn->iterate(mCurrentState, mEnergyCalculator, input);
 	if ( result == SimAnn::FAIL) {
