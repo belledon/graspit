@@ -242,5 +242,7 @@ public:
 	virtual void configPlanner(std::map<std::string, double>& params);
 	//! Added to allow for interface flexibility
 	virtual void setModelState(const GraspPlanningState *modelState) = 0;
+	//! A method for run time identification
+	virtual void printPlanner();
 };
 #endif

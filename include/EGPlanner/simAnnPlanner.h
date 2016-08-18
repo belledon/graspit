@@ -79,6 +79,8 @@ public:
 
 	using EGPlanner::configPlanner;
 	void configPlanner(SimAnnParams *params);
+	using EGPlanner::printPlanner;
+	void printPlanner();
 };
 
 #endif

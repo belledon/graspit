@@ -121,4 +121,6 @@ public:
 	void configParams(std::map<std::string, double>& params);
 
 	void getParameters();
+
+	void listParams();
 };
