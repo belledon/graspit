@@ -37,6 +37,7 @@ class SoSensor;
 #include <stdio.h>
 #include "matvec3D.h"
 #include <vector>
+#include <map>
 
 /*!	This class performs simulated annealing on a collection of variables 
 	(a GraspPlanningState*). It has no idea of grasps, hands, etc. The cooling 
@@ -58,7 +59,7 @@ public:
 	enum Result{FAIL = 0, JUMP = 1, KEEP =2};
 private:
 
-	AnnealingParams AnnealingParameters;
+	AnnealingType TYPE;
 	//Annealing parameters
 	//! Annealing constant for neighbor generation schedule
 	double YC; 
@@ -102,6 +103,7 @@ private:
 
 public:
 	SimAnn();
+	SimAnn(std::map<std::string, double>& params);
     virtual ~SimAnn();
 
 	//! The main interface to this class. Performs one annealing step
@@ -114,7 +116,11 @@ public:
 
 	void useParameters(
 		AnnealingType type, 
-		std::vector<float> *p);
+		std::vector<float> p);
+
+	void configParams(std::map<std::string, double>& params);
 
 	void getParameters();
+
+	void listParams();
 };

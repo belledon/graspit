@@ -30,12 +30,14 @@
 #include <list>
 #include <ostream>
 #include <time.h>
+#include <map>
 
 #include <QThread>
 #include <QMutex>
 #include <QObject>
 
 #include "EGPlanner/search.h"
+#include "EGPlanner/PlanningParams.h"
 
 class Hand;
 class Body;
@@ -160,6 +162,8 @@ public:
 	//! The constructor is desigend NOT to be called by sub-classes.
 	EGPlanner(Hand *h);
 	virtual ~EGPlanner();
+
+	void setHand(Hand *h);
 	//! The type of this planner, for easier run-time check.
 	virtual PlannerType getType()=0;
 	
@@ -234,5 +238,11 @@ public:
 
 	//! Set the stream for outputting stats and info
 	void setStatStream(std::ostream *out) const;
+	//! Legacy implementation, allows passage of parameters intended for SimAnnPlanner
+	virtual void configPlanner(std::map<std::string, double>& params);
+	//! Added to allow for interface flexibility
+	virtual void setModelState(const GraspPlanningState *modelState) = 0;
+	//! A method for run time identification
+	virtual void printPlanner();
 };
 #endif

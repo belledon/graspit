@@ -18,25 +18,25 @@ enum ActionType{ACTION_GRASP, ACTION_OPEN, ACTION_PLAN};
 
 enum InputType{INPUT_NONE = 0,  INPUT_GLOVE = 1, INPUT_FILE = 2, INPUT_FLOCK = 4};
 
-struct AnnealingParams{
-	AnnealingType type;
-	//Annealing parameters
-	//! Annealing constant for neighbor generation schedule
-	double YC; 
-	//! Annealing constant for error acceptance schedule
-	double HC; 
-	//! Number of dimensions for neighbor generation schedule
-	double YDIMS; 
-	//! Number of dimensions for error acceptance schedule
-	double HDIMS; 
-	//! Adjust factor for neighbor generation schedule
-	double NBR_ADJ; 
-	//! Adjust raw errors reported by states to be in the relevant range of the annealing schedule	
-	double ERR_ADJ; 
-	//! Starting temperatue
-	double DEF_T0; 
-	//! Starting step
-	double DEF_K0; 
-};
+// struct AnnealingParams{
+// 	AnnealingType TYPE;
+// 	//Annealing parameters
+// 	//! Annealing constant for neighbor generation schedule
+// 	double YC; 
+// 	//! Annealing constant for error acceptance schedule
+// 	double HC; 
+// 	//! Number of dimensions for neighbor generation schedule
+// 	double YDIMS; 
+// 	//! Number of dimensions for error acceptance schedule
+// 	double HDIMS; 
+// 	//! Adjust factor for neighbor generation schedule
+// 	double NBR_ADJ; 
+// 	//! Adjust raw errors reported by states to be in the relevant range of the annealing schedule	
+// 	double ERR_ADJ; 
+// 	//! Starting temperatue
+// 	double DEF_T0; 
+// 	//! Starting step
+// 	double DEF_K0; 
+// };
 
 #endif

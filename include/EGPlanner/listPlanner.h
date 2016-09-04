@@ -83,6 +83,9 @@ public:
 
 	//! A hack; shows the state and also does approachToContact as the SearchEnergy would
 	void prepareState(int index);
+
+	//! Added to allow for interface flexibility
+	virtual void setModelState(const GraspPlanningState *modelState){};
 };
 
 #endif

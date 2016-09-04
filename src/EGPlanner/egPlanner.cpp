@@ -33,7 +33,7 @@
 #include "robots/robotiq.h"
 #include "robots/pr2Gripper.h"
 #include "body.h"
-#include "EGPlanner/simAnn.h"
+// #include "EGPlanner/simAnn.h"
 #include "world.h"
 #include "gloveInterface.h" //for glove input
 #include "eigenGrasp.h" //for glove input
@@ -92,6 +92,11 @@ EGPlanner::~EGPlanner()
 	if (mCurrentState) delete mCurrentState;
 	if (mTargetState) delete mTargetState;
 	if (mIdleSensor) delete mIdleSensor;
+}
+
+void EGPlanner::setHand(Hand * h)
+{
+	mHand = h;
 }
 
 /*! Set the current state of the planner. It will accept any state, as
@@ -506,6 +511,7 @@ EGPlanner::processInput()
 		//if we are using the glove as input, the mTargetState needs to be 
 		//updated all the time. Since the planner has the callback loop, 
 		//it's the planner who has to do it, not the dialog
+		
 		assert(mHand->getGloveInterface());
 		double *gloveDOF = new double [mHand->getNumDOF()];
 		for (int d=0; d<mHand->getNumDOF(); d++) {
@@ -518,6 +524,7 @@ EGPlanner::processInput()
 		mTargetState->getPosture()->storeHandDOF(gloveDOF);
 		delete [] gloveDOF;		
 	}
+	
 	//for input from the Flock of Birds:
 	//nothing to do here. The way this works, is that the reference hand 
 	//is controlled by the flock of birds. The OnLinePlanner is designed 
@@ -576,4 +583,14 @@ EGPlanner::setStatStream(std::ostream *out) const
 	mOut = out; 
 	assert(mEnergyCalculator);
 	mEnergyCalculator->setStatStream(out);
+}
+
+void EGPlanner::configPlanner(std::map<std::string, double>& params)
+{
+	DBGA("EGPlanner::configPlanner should not be called!")
+}
+
+void EGPlanner::printPlanner()
+{
+	DBGA("This is an abstract EGPlanner");
 }
