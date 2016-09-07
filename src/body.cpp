@@ -378,8 +378,8 @@ Body::load(const QString &filename)
 		return FAILURE;
 	}
 	if (fileType != "xml") {
-		//make geometry point at the right thing
-		QString relFilename = filename;//why, just why all of this sorrow? ->relativePath(filename, QString(getenv("GRASPIT")) + 
+		//make geometry point at the right thing -> no you didn't
+		//why, just why all of this sorrow? ->QString relFilename = relativePath(filename, QString(getenv("GRASPIT")) + 
 						   //QString("/models/objects/"));
 		TiXmlElement * element = new TiXmlElement("geometryFile");
 		if (fileType=="iv" || fileType=="wrl") {
@@ -389,7 +389,7 @@ Body::load(const QString &filename)
 		} else if (fileType=="ply") {
 			element->SetAttribute("type","ply");
 		}
-		TiXmlText * text = new TiXmlText( relFilename );
+		TiXmlText * text = new TiXmlText(filename);
 		element->LinkEndChild(text);
 		doc.RootElement()->LinkEndChild(element);		
 	}
