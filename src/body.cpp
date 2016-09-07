@@ -391,12 +391,19 @@ Body::load(const QString &filename)
 		}
 		TiXmlText * text = new TiXmlText(filename);
 		element->LinkEndChild(text);
-		doc.RootElement()->LinkEndChild(element);		
+		doc.RootElement()->LinkEndChild(element);
+	
+		if (loadFromXml(doc.RootElement(), filename) != SUCCESS) {
+			return FAILURE;
+		}
 	}
-	//the root path is the directory in which the xml file is placed
-	QString root = xmlFilename.section('/',0,-2,QString::SectionIncludeTrailingSep);
-	if (loadFromXml(doc.RootElement(), root) != SUCCESS) {
-		return FAILURE;
+
+	else{
+		//the root path is the directory in which the xml file is placed
+		QString root = xmlFilename.section('/',0,-2,QString::SectionIncludeTrailingSep);
+		if (loadFromXml(doc.RootElement(), root) != SUCCESS) {
+			return FAILURE;
+		}
 	}
 	//add material for controlling transparency
 	addIVMat();
