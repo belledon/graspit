@@ -392,8 +392,8 @@ Body::load(const QString &filename)
 		TiXmlText * text = new TiXmlText(filename);
 		element->LinkEndChild(text);
 		doc.RootElement()->LinkEndChild(element);
-	
-		if (loadFromXml(doc.RootElement(), filename) != SUCCESS) {
+		QString root = "";
+		if (loadFromXml(doc.RootElement(), root) != SUCCESS) {
 			return FAILURE;
 		}
 	}
