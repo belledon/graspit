@@ -365,7 +365,7 @@ Body::load(const QString &filename)
 		xmlFilename = QString(getenv("GRASPIT")) + QString("/models/objects/default.xml");
 	}
 
-
+	DBGA("Using absolute path to retrieve geometry:" << filename.latin1());
 	myFilename = filename;//removed due to bug: prepended shorter dir to longer dir->relativePath(filename, getenv("GRASPIT"));
 	if (myName.isEmpty() || myName == "unnamed") {
 		setName(filename.section('/',-1).section('.',0,0));
