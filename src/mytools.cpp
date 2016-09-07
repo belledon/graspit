@@ -116,7 +116,7 @@ relativePath(QString absolutePath, QString relativeToDir )
 			break;
 		}
 	}
-	DBGP("Last common root: " << lastCommonRoot);
+	DBGA("Last common root: " << lastCommonRoot);
 
 	//If we didn't find a common prefix then return full absolute path
 	if (lastCommonRoot == -1) {
@@ -139,7 +139,7 @@ relativePath(QString absolutePath, QString relativeToDir )
 	}
 	relativePath.append(absoluteDirectories[absoluteDirectories.count() - 1]);
 
-	DBGP("Relative path: " << relativePath.latin1());
+	DBGA("Relative path: " << relativePath.latin1());
 	return relativePath;
 }
 
