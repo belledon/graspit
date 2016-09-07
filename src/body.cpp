@@ -366,7 +366,7 @@ Body::load(const QString &filename)
 	}
 
 
-	myFilename = relativePath(filename, getenv("GRASPIT"));
+	myFilename = filename;//removed due to bug: prepended shorter dir to longer dir->relativePath(filename, getenv("GRASPIT"));
 	if (myName.isEmpty() || myName == "unnamed") {
 		setName(filename.section('/',-1).section('.',0,0));
 	}
