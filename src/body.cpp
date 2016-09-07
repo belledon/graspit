@@ -379,8 +379,8 @@ Body::load(const QString &filename)
 	}
 	if (fileType != "xml") {
 		//make geometry point at the right thing
-		QString relFilename = relativePath(filename, QString(getenv("GRASPIT")) + 
-						   QString("/models/objects/"));
+		QString relFilename = filename;//why, just why all of this sorrow? ->relativePath(filename, QString(getenv("GRASPIT")) + 
+						   //QString("/models/objects/"));
 		TiXmlElement * element = new TiXmlElement("geometryFile");
 		if (fileType=="iv" || fileType=="wrl") {
 			element->SetAttribute("type","Inventor");
