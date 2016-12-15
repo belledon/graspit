@@ -117,6 +117,7 @@ GraspitCore::GraspitCore(int argc, char **argv):
         // or it segfaults
         // SoQt::exitMainLoop();
         SoQt::init(argv[0], "SOQT");
+        DBGA("Finished initializing SoQT");
     }
     else{
         mainWindow = new MainWindow;
