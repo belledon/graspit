@@ -113,7 +113,7 @@ GraspitCore::GraspitCore(int argc, char **argv):
         }
         // need to initialize with this init() instead of passing argc, argv
         // or it segfaults
-        SoQt::finish();
+        SoQt::exitMainLoop();
         SoQt::init(argv[0], "SOQT");
     }
     else{
