@@ -73,6 +73,7 @@ GraspitCore *graspitCore = 0;
 */
 GraspitCore::~GraspitCore()
 {
+  DBGA("GraspitCore Destructor");
   //clean up plugins and creators
   stopAllPlugins();
   for (size_t i=0; i<mPluginCreators.size(); i++) {
